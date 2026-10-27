@@ -413,7 +413,23 @@ const usd=v=>v==null?'—':v>=1e9?'$'+(v/1e9).toFixed(2)+'B':v>=1e6?'$'+(v/1e6).
 const ago=t=>{const s=Math.max(0,(Date.now()-new Date(t))/1000);return s<60?Math.round(s)+'s':s<3600?Math.round(s/60)+'m':s<86400?Math.round(s/3600)+'h':Math.round(s/86400)+'d'};
 const BAD=/fuck|shit|cunt|n[i1]gg|fag|retard|porn|\bsex|\bcum|rape|nazi|hitler|kkk|pedo|whore|slut|dick|cock|pussy|bitch|kys/i;
 const img=t=>t.imageUrl?(t.imageUrl.startsWith('http')?t.imageUrl:SITE+t.imageUrl):'';
-const av=(t,cls='')=>img(t)?`<img class="${cls}" src="${esc(img(t))}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ph'}))">`:`<span class="ph"></span>`;
+const HOK={},HERR={},JUPI={},GEN={};
+const hostOf=u=>{try{return new URL(u,SITE).host}catch(e){return ''}};
+const dead=u=>{const h=hostOf(u);return (HERR[h]||0)>=3&&!HOK[h]};
+function hue(s){let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619);return (h>>>0)/4294967295}
+function gen(t){const k=t.mint||t.symbol||'?';if(GEN[k])return GEN[k];const s=norm(t.symbol).replace(/[^A-Z0-9]/g,'').slice(0,2)||'?';const a=Math.round(165+hue(k)*70),b=a+28;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${a},42%,38%)"/><stop offset="1" stop-color="hsl(${b},55%,14%)"/></linearGradient></defs><rect width="64" height="64" fill="url(#g)"/><circle cx="50" cy="12" r="22" fill="#fff" opacity=".07"/><text x="32" y="41" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="24" fill="#eaf6fa">${s}</text></svg>`;
+  return GEN[k]='data:image/svg+xml,'+encodeURIComponent(svg)}
+function cands(t){const L=[img(t),JUPI[t.mint]].filter(Boolean);return [...new Set(L)].filter(u=>!dead(u))}
+function av(t,cls=''){const c=cands(t),g=gen(t);if(!c.length)return `<img class="${cls}" src="${g}" alt="">`;
+  return `<img class="${cls}" src="${esc(c[0])}" data-n="${esc(c.slice(1).join('|'))}" data-k="${esc(t.mint||t.symbol||'?')}" alt="" loading="lazy" referrerpolicy="no-referrer" onload="imgOk(this)" onerror="imgErr(this)">`}
+function imgOk(el){if(!el.src.startsWith('data:'))HOK[hostOf(el.src)]=(HOK[hostOf(el.src)]||0)+1}
+function imgErr(el){const h=hostOf(el.src);HERR[h]=(HERR[h]||0)+1;const rest=(el.dataset.n||'').split('|').filter(u=>u&&!dead(u));
+  if(rest.length){el.dataset.n=rest.slice(1).join('|');el.src=rest[0];return}el.onerror=null;el.onload=null;el.src=GEN[el.dataset.k]||gen({mint:el.dataset.k,symbol:'?'})}
+async function jupIcons(list){const ids=list.map(t=>t.mint).filter(m=>m&&!(m in JUPI));for(let i=0;i<ids.length;i+=100){const ch=ids.slice(i,i+100);
+  try{const ac=new AbortController();const to=setTimeout(()=>ac.abort(),5000);const r=await fetch('https://lite-api.jup.ag/tokens/v2/search?query='+ch.join(','),{signal:ac.signal});clearTimeout(to);
+    if(r.ok)for(const x of await r.json())if(x.icon)JUPI[x.id]=x.icon;}catch(e){}ch.forEach(m=>{if(!(m in JUPI))JUPI[m]=''})}}
+const tsAgo=t=>`<span data-ts="${esc(t.createdAt)}">${ago(t.createdAt)}</span>`;
 const norm=s=>String(s||'').trim().replace(/^\$/,'').toUpperCase();
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1800)};
 const copy=async(s,m)=>{try{await navigator.clipboard.writeText(s);toast(m||'Copied')}catch(e){toast('Copy failed')}};
@@ -434,22 +450,23 @@ $('#slist').addEventListener('click',e=>{const b=e.target.closest('.sbtn');if(b)
 
 /* data */
 let RECENT=[],TOTAL=null;
-async function page(p,n=100){const r=await fetch(`${SF}?pageSize=${n}&sort=newest&page=${p}`);if(!r.ok)throw new Error(r.status);return (await r.json()).data}
-async function loadRecent(n){const pages=Math.ceil(n/100);const ds=await Promise.all(Array.from({length:pages},(_,i)=>page(i+1)));TOTAL=ds[0]?.pagination?.total??TOTAL;
+let LAST=0;
+async function page(p,n=100){const r=await fetch(`${SF}?pageSize=${n}&sort=newest&page=${p}&_=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(r.status);return (await r.json()).data}
+async function loadRecent(n){const pages=Math.ceil(n/100);const ds=await Promise.all(Array.from({length:pages},(_,i)=>page(i+1)));LAST=Date.now();TOTAL=ds[0]?.pagination?.total??TOTAL;
   const seen=new Set();RECENT=ds.flatMap(d=>d.tokens||[]).filter(t=>t&&!seen.has(t.mint)&&seen.add(t.mint));return RECENT}
 function tape(list){const L=list.filter(t=>!BAD.test((t.name||'')+' '+(t.symbol||''))).slice(0,40);if(!L.length){$('#tape').innerHTML='<span class="chip"><small>StonkFun isn\'t answering right now.</small></span>';return}
-  const h=L.map(t=>`<a class="chip" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener">${av(t)}<b>$${esc(norm(t.symbol).slice(0,12))}</b><span class="q">${esc(t.quote?.symbol||'')}</span><small>${ago(t.createdAt)} ago</small></a>`).join('');$('#tape').innerHTML=h+h}
+  const h=L.map(t=>`<a class="chip" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener">${av(t)}<b>$${esc(norm(t.symbol).slice(0,12))}</b><span class="q">${esc(t.quote?.symbol||'')}</span><small>${tsAgo(t)} ago</small></a>`).join('');$('#tape').innerHTML=h+h}
 function groupsOf(list){const m=new Map();for(const t of list){const k=norm(t.symbol);if(!k)continue;if(!m.has(k))m.set(k,[]);m.get(k).push(t)}
   return [...m.entries()].filter(([k,v])=>v.length>1).map(([k,v])=>[k,v.sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt))]).sort((a,b)=>b[1].length-a[1].length||new Date(b[1].at(-1).createdAt)-new Date(a[1].at(-1).createdAt))}
 let RN=300;
 function radar(){const list=RECENT.slice(0,RN);const G=groupsOf(list);const copies=G.reduce((a,[,v])=>a+v.length-1,0);
   $('#rScan').textContent=list.length.toLocaleString('en-US');$('#rGroups').textContent=G.length;$('#rCopies').textContent=copies;
-  const span=list.length?ago(list.at(-1).createdAt):'';$('#rLive').textContent=list.length?`Live · last ${span}`:'Offline';
+  $('#rLive').textContent=list.length?'Live · updated just now':'Offline';
   if(!list.length){BLIPS=[];$('#groups').innerHTML='<div class="empty">StonkFun isn\'t answering right now. Try again in a moment.</div>';return}
   if(!G.length){BLIPS=[];$('#groups').innerHTML='<div class="empty">No repeated tickers in this window.</div>';return}
   $('#groups').innerHTML=G.map(([k,v],gi)=>{const clean=BAD.test(k+' '+v.map(t=>t.name).join(' '));const K=clean?'█'.repeat(Math.min(k.length,6)):esc(k.slice(0,14));
     return `<div class="grp ${gi===0?'open':''}"><div class="gh"><span class="tk">$${K}</span><span class="stack">${v.slice(0,6).map(t=>av(t)).join('')}</span><span class="cnt">${v.length}×</span><span class="car">›</span></div>
-    <div class="gb">${v.map((t,i)=>`<a class="cl" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener"><span class="nm">${av(t)}<span>${clean?'—':esc((t.name||'').slice(0,34))}</span></span><span class="q mono muted c3" style="font-size:12px">${esc(t.quote?.symbol||'')}</span><span class="mono muted c4" style="font-size:12px">${usd(t.market?.marketCapUsd)} · ${ago(t.createdAt)} ago</span><span class="tag ${i?'vp':'og'}">${i?'COPY #'+i:'FIRST'}</span></a>`).join('')}</div></div>`}).join('');
+    <div class="gb">${v.map((t,i)=>`<a class="cl" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener"><span class="nm">${av(t)}<span>${clean?'—':esc((t.name||'').slice(0,34))}</span></span><span class="q mono muted c3" style="font-size:12px">${esc(t.quote?.symbol||'')}</span><span class="mono muted c4" style="font-size:12px">${usd(t.market?.marketCapUsd)} · ${tsAgo(t)} ago</span><span class="tag ${i?'vp':'og'}">${i?'COPY #'+i:'FIRST'}</span></a>`).join('')}</div></div>`}).join('');
   blips(G,list);
   $('#rSrc').textContent=`StonkFun public API · newest ${list.length} launches · refreshed ${new Date().toLocaleTimeString()}`}
 
@@ -489,10 +506,10 @@ $('#qpick').addEventListener('click',e=>{const b=e.target.closest('button');if(!
 /* ticker check */
 async function check(){const tk=norm($('#cIn').value).replace(/\s+/g,'');const out=$('#cOut');if(!tk){$('#cIn').focus();return}
   out.className='verdict show';out.innerHTML='<span class="muted">Searching StonkFun…</span>';$('#cBtn').disabled=true;
-  try{const r=await fetch(`${SF}?pageSize=100&q=${encodeURIComponent(tk)}`);const j=await r.json();const all=j.data?.tokens||[];const hit=all.filter(t=>norm(t.symbol)===tk).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
+  try{const r=await fetch(`${SF}?pageSize=100&q=${encodeURIComponent(tk)}&_=${Date.now()}`,{cache:'no-store'});const j=await r.json();const all=j.data?.tokens||[];await jupIcons(all.filter(t=>norm(t.symbol)===tk).slice(0,30));const hit=all.filter(t=>norm(t.symbol)===tk).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
     const more=(j.data?.pagination?.total||0)>100;
     if(!hit.length){out.innerHTML=`<h4 class="ok">$${esc(tk)} is clean.</h4><div class="muted" style="font-size:14px">No StonkFun coin uses this exact ticker${more?' in the top 100 matches':''}. Seal it before someone else sees it.</div><div style="margin-top:12px"><a class="btn pri sm" href="#prepare" onclick="document.getElementById('pTk').value='${esc(tk)}';syncCard()">Seal $${esc(tk)} →</a></div>`}
-    else{out.innerHTML=`<h4 class="no">$${esc(tk)} is taken ${hit.length}×${more?'+':''}.</h4><div class="muted" style="font-size:14px">Launching it now makes you copy #${hit.length}. First one: ${esc((hit[0].name||'').slice(0,40))}, ${ago(hit[0].createdAt)} ago.</div><div class="ls">${hit.slice(0,30).map((t,i)=>`<a class="cl" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener"><span class="nm">${av(t)}<span>${esc((t.name||'').slice(0,34))}</span></span><span class="mono muted c3" style="font-size:12px">${esc(t.quote?.symbol||'')}</span><span class="mono muted c4" style="font-size:12px">${usd(t.market?.marketCapUsd)} · ${ago(t.createdAt)} ago</span><span class="tag ${i?'vp':'og'}">${i?'COPY #'+i:'FIRST'}</span></a>`).join('')}</div>`}
+    else{out.innerHTML=`<h4 class="no">$${esc(tk)} is taken ${hit.length}×${more?'+':''}.</h4><div class="muted" style="font-size:14px">Launching it now makes you copy #${hit.length}. First one: ${esc((hit[0].name||'').slice(0,40))}, ${ago(hit[0].createdAt)} ago.</div><div class="ls">${hit.slice(0,30).map((t,i)=>`<a class="cl" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener"><span class="nm">${av(t)}<span>${esc((t.name||'').slice(0,34))}</span></span><span class="mono muted c3" style="font-size:12px">${esc(t.quote?.symbol||'')}</span><span class="mono muted c4" style="font-size:12px">${usd(t.market?.marketCapUsd)} · ${tsAgo(t)} ago</span><span class="tag ${i?'vp':'og'}">${i?'COPY #'+i:'FIRST'}</span></a>`).join('')}</div>`}
   }catch(e){out.innerHTML='<span class="no">StonkFun isn\'t answering right now. Try again in a moment.</span>'}
   $('#cBtn').disabled=false}
 $('#cBtn').addEventListener('click',check);$('#cIn').addEventListener('keydown',e=>{if(e.key==='Enter')check()});
@@ -526,7 +543,7 @@ addEventListener('scroll',()=>{let cur='';for(const s of secs)if(s.getBoundingCl
 /* hero chips: newest real launches floating around the knight */
 const POS=[['left',0,10],['right',8,4],['right',0,40],['left',0,52],['right',3,74],['left',6,82]];let CI=0;
 function chipHTML(t){const k=norm(t.symbol);const n=RECENT.filter(x=>norm(x.symbol)===k).length;const tag=n>1?'<span class="tag vp">COPY</span>':'<span class="tag og">NEW</span>';
-  return `${av(t)}<span><b>$${esc(k.slice(0,10))}</b> ${tag}<small>${esc(t.quote?.symbol||'')} · ${ago(t.createdAt)} ago</small></span>`}
+  return `${av(t)}<span><b>$${esc(k.slice(0,10))}</b> ${tag}<small>${esc(t.quote?.symbol||'')} · ${tsAgo(t)} ago</small></span>`}
 function orb(){const L=RECENT.filter(t=>!BAD.test((t.name||'')+' '+(t.symbol||'')));if(!L.length)return;
   if(!$('#orb').children.length){$('#orb').innerHTML=POS.map((p,i)=>`<a class="fchip" style="${p[0]}:${p[1]}%;top:${p[2]}%;animation-delay:${-i*1.1}s" target="_blank" rel="noopener"></a>`).join('');CI=0}
   [...$('#orb').children].forEach((el,i)=>{const t=L[(CI+i)%L.length];el.innerHTML=chipHTML(t);el.href=`${SITE}/token/${encodeURIComponent(t.mint)}`});CI+=POS.length}
@@ -543,9 +560,11 @@ const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){[...e.
 
 /* init */
 renderSteps();
-(async()=>{try{await loadRecent(300)}catch(e){$('#rLive').textContent='Offline';$('#groups').innerHTML='<div class="empty">StonkFun isn\'t answering right now. Try again in a moment.</div>'}
+let TOP='';
+(async()=>{try{await loadRecent(300);await jupIcons(RECENT);TOP=RECENT[0]?.mint||''}catch(e){$('#rLive').textContent='Offline';$('#groups').innerHTML='<div class="empty">StonkFun isn\'t answering right now. Try again in a moment.</div>'}
   tape(RECENT);radar();quotes();orb()})();
-setInterval(async()=>{try{await loadRecent(Math.max(RN,300));tape(RECENT);radar()}catch(e){}},60000);
+setInterval(async()=>{if(document.hidden)return;try{await loadRecent(Math.max(RN,300));await jupIcons(RECENT);const top=RECENT[0]?.mint||'';if(top!==TOP){TOP=top;tape(RECENT)}radar()}catch(e){}},20000);
+setInterval(()=>{$$('[data-ts]').forEach(el=>el.textContent=ago(el.dataset.ts));if(LAST&&RECENT.length){const s=Math.round((Date.now()-LAST)/1000);$('#rLive').textContent='Live · updated '+(s<5?'just now':s+'s ago')}},1000);
 </script>
 </body>
 </html>
