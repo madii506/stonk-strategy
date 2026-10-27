@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#050c10;--bg2:#071318;--card:#0b1a20;--card2:#0e2229;--line:#17303a;--line2:#21414d;--tx:#eef6f8;--mut:#8aa6b0;--dim:#5d7781;--acc:#69aac1;--acc2:#b6e0ee;--up:#4ade80;--dn:#f87171}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
+*{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip}
 body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
@@ -24,7 +24,8 @@ a{color:inherit;text-decoration:none}
 nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(5,12,16,.72);border-bottom:1px solid rgba(23,48,58,.7)}
 nav .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:66px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.03em;font-size:17px}
-.brand img{width:32px;height:32px;border-radius:9px}
+.brand img{width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(105,170,193,.25));transition:transform .4s}
+.brand:hover img{transform:rotate(-8deg) scale(1.08)}
 .links{display:flex;gap:4px;background:rgba(14,34,41,.6);border:1px solid var(--line);border-radius:999px;padding:4px}
 .links a{padding:7px 14px;border-radius:999px;font-size:13.5px;color:var(--mut);font-weight:600;transition:.2s}
 .links a:hover,.links a.on{color:var(--tx);background:var(--card2)}
@@ -37,7 +38,7 @@ nav .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;hei
 .btn[disabled]{opacity:.5;cursor:not-allowed}
 
 /* hero */
-.hero{padding:76px 0 40px}
+.hero{padding:76px 0 40px;overflow:hidden}
 .hero .wrap{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
 .kick{font:700 12px 'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);display:flex;align-items:center;gap:10px}
 .kick::before{content:'';width:22px;height:1px;background:var(--acc)}
@@ -50,26 +51,28 @@ h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc2),var(--acc))
 .hstats div{min-width:120px}
 .hstats b{display:block;font:700 26px 'JetBrains Mono',monospace;letter-spacing:-.03em}
 .hstats span{font-size:12.5px;color:var(--mut)}
-.vis{position:relative;min-height:560px}
-.kimg{position:absolute;right:0;top:0;width:88%;aspect-ratio:1;border-radius:28px;overflow:hidden;border:1px solid var(--line2);box-shadow:0 40px 90px rgba(0,0,0,.55)}
-.kimg img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.5);transform-origin:2% 46%;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
-.vis:hover .kimg img{transform:scale(1.56)}
-.kimg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(5,12,16,.6))}
-.filing{position:absolute;left:0;bottom:0;width:min(350px,64%);background:linear-gradient(165deg,rgba(16,38,46,.96),rgba(8,20,25,.97));border:1px solid var(--line2);border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,.6);overflow:hidden;backdrop-filter:blur(10px)}
-.fbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
-.fbar .t{font:700 10.5px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--mut);text-transform:uppercase}
-.tog{display:flex;background:#06141a;border:1px solid var(--line);border-radius:9px;padding:3px}
-.tog button{border:0;background:none;color:var(--mut);font:700 11.5px Inter;padding:6px 10px;border-radius:7px;cursor:pointer;transition:.2s}
-.tog button.on{background:var(--acc);color:#04141a}
-.frows{padding:6px 16px 14px}
-.fr{display:flex;justify-content:space-between;align-items:center;height:38px;border-bottom:1px solid rgba(23,48,58,.6);font-size:13.5px}
-.fr:last-child{border:0}
-.fr span{color:var(--mut);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
-.fr b{font-weight:700;font-size:13px;transition:color .3s}
-.red{display:inline-block;height:15px;border-radius:4px;background:#010507;box-shadow:inset 0 0 0 1px rgba(105,170,193,.35);vertical-align:middle;transition:width .5s cubic-bezier(.2,.7,.2,1)}
-.bad{color:var(--dn)}.good{color:var(--up)}.acc{color:var(--acc)}
-.fnote{font-size:11px;color:var(--dim);padding:0 16px 12px}
-
+.vis{position:relative;height:580px;perspective:1100px}
+.floor{position:absolute;left:-30%;right:-30%;bottom:-4%;height:58%;background-image:linear-gradient(rgba(105,170,193,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(105,170,193,.28) 1px,transparent 1px);background-size:64px 64px;transform:rotateX(70deg);transform-origin:50% 100%;-webkit-mask-image:radial-gradient(ellipse 50% 60% at 50% 70%,#000 15%,transparent 70%);mask-image:radial-gradient(ellipse 50% 60% at 50% 70%,#000 15%,transparent 70%);animation:grid 2.4s linear infinite}
+@keyframes grid{to{background-position:0 64px}}
+.halo{position:absolute;left:50%;top:46%;width:460px;height:460px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(105,170,193,.34),rgba(105,170,193,.08) 45%,transparent 68%);animation:halo 4.5s ease-in-out infinite}
+@keyframes halo{50%{opacity:.6;transform:translate(-50%,-50%) scale(1.08)}}
+.ring{position:absolute;left:50%;bottom:9%;width:440px;height:440px;margin-left:-220px;border-radius:50%;border:1.5px dashed rgba(105,170,193,.4);transform:rotateX(76deg);animation:spin 26s linear infinite}
+.ring.r2{width:600px;height:600px;margin-left:-300px;bottom:3%;border:1px solid rgba(105,170,193,.14);animation-duration:40s;animation-direction:reverse}
+.ring::after{content:'';position:absolute;top:-5px;left:50%;width:10px;height:10px;border-radius:50%;background:var(--up);box-shadow:0 0 14px var(--up)}
+.ring.r2::after{background:var(--acc);box-shadow:0 0 14px var(--acc)}
+@keyframes spin{to{transform:rotateX(76deg) rotateZ(360deg)}}
+.par{position:absolute;inset:0;transition:transform .25s ease-out;pointer-events:none}
+.knight{position:absolute;left:50%;top:48%;width:min(380px,70%);transform:translate(-50%,-50%);filter:drop-shadow(0 40px 40px rgba(0,0,0,.55)) drop-shadow(0 0 40px rgba(105,170,193,.18));animation:bob 5.5s ease-in-out infinite}
+@keyframes bob{50%{transform:translate(-50%,-54%)}}
+.shadow{position:absolute;left:50%;bottom:13%;width:260px;height:40px;margin-left:-130px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%);animation:shd 5.5s ease-in-out infinite}
+@keyframes shd{50%{transform:scale(.86);opacity:.7}}
+.orb{position:absolute;inset:0}
+.fchip{position:absolute;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 7px;border-radius:12px;border:1px solid var(--line2);background:rgba(11,26,32,.86);backdrop-filter:blur(8px);font-size:12.5px;white-space:nowrap;box-shadow:0 14px 30px rgba(0,0,0,.4);animation:fl 6s ease-in-out infinite;transition:opacity .6s,transform .6s}
+.fchip.out{opacity:0;transform:scale(.9)}
+.fchip img,.fchip .ph{width:26px;height:26px;border-radius:8px;object-fit:cover;background:var(--card2)}
+.fchip b{font-weight:800;letter-spacing:-.01em}
+.fchip small{display:block;color:var(--mut);font-size:11px;line-height:1.2}
+@keyframes fl{50%{translate:0 -10px}}
 /* tape */
 .tape{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(7,19,24,.7);overflow:hidden;position:relative}
 .tape .tl{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;gap:8px;padding:0 44px 0 16px;background:linear-gradient(90deg,#071318 78%,rgba(7,19,24,0));font:700 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--up)}
@@ -83,6 +86,34 @@ h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc2),var(--acc))
 .chip img,.chip .ph{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--card2);flex:none}
 .chip b{font-weight:700}.chip small{color:var(--mut);font-size:11.5px}
 .chip .q{font:700 10.5px 'JetBrains Mono',monospace;color:var(--acc);background:rgba(105,170,193,.1);padding:2px 6px;border-radius:5px}
+
+/* fx */
+.red{display:inline-block;height:15px;border-radius:4px;background:#010507;box-shadow:inset 0 0 0 1px rgba(105,170,193,.35);vertical-align:middle}
+.bad{color:var(--dn)}.good{color:var(--up)}.acc{color:var(--acc)}
+.fbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.fbar .t{font:700 10.5px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--mut);text-transform:uppercase}
+.frows{padding:6px 16px 14px}
+.fr{display:flex;justify-content:space-between;align-items:center;height:38px;border-bottom:1px solid rgba(23,48,58,.6);font-size:13.5px}
+.fr:last-child{border:0}
+.fr span{color:var(--mut);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.fr b{font-weight:700;font-size:13px}
+.w{display:inline-block;opacity:0;transform:translateY(45%) rotateX(-50deg);transform-origin:50% 100%;animation:wIn 1s cubic-bezier(.2,.7,.2,1) forwards}
+h1 em .w{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes wIn{to{opacity:1;transform:none}}
+.btn{position:relative;overflow:hidden}
+.btn.pri::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);transition:left .6s}
+.btn.pri:hover::after{left:130%}
+.spot{position:fixed;width:620px;height:620px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(105,170,193,.09),transparent 60%);transform:translate(-50%,-50%);left:-999px;top:-999px;transition:opacity .3s}
+.stg>*{opacity:0;transform:translateY(16px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+.stg>*.shown{opacity:1;transform:none}
+.ptop{position:relative}
+.ptop::after{content:'';position:absolute;left:0;bottom:-1px;height:1px;width:30%;background:linear-gradient(90deg,transparent,var(--acc),transparent);animation:scan 3.2s linear infinite}
+@keyframes scan{from{transform:translateX(-100%)}to{transform:translateX(340%)}}
+.tilt{transition:transform .3s ease-out;transform-style:preserve-3d;will-change:transform}
+.grp.new{animation:flash 1.6s}
+@keyframes flash{0%{background:rgba(74,222,128,.12)}100%{background:transparent}}
+.hstats b{transition:color .3s}
+.kick{overflow:hidden}
 
 /* sections */
 section.blk{padding:96px 0}
@@ -215,9 +246,7 @@ h2 em{font-style:normal;color:var(--acc)}
 @media (max-width:960px){
   nav .wrap{grid-template-columns:1fr auto}.links{display:none}
   .hero .wrap,.steps,.tools,.compose{grid-template-columns:1fr}
-  .vis{min-height:0;display:flex;flex-direction:column}
-  .kimg{position:relative;width:100%}.kimg img{transform:scale(1.35);transform-origin:50% 50%}.vis:hover .kimg img{transform:scale(1.35)}
-  .filing{position:relative;width:100%;margin-top:-80px}
+  .vis{height:440px}.knight{width:min(300px,62%)}.ring{width:320px;height:320px;margin-left:-160px}.ring.r2{width:440px;height:440px;margin-left:-220px}.fchip:nth-child(n+5){display:none}.spot{display:none}
   .rstats{grid-template-columns:1fr}.rstats div{border-right:0;border-bottom:1px solid var(--line)}
   .crow{grid-template-columns:1fr 1fr 1fr}.crow>div{padding:12px;font-size:13px}
   .cl{grid-template-columns:1fr auto}.cl .c3,.cl .c4{display:none}
@@ -227,10 +256,10 @@ h2 em{font-style:normal;color:var(--acc)}
 </style>
 </head>
 <body>
-<div class="bgfx"></div>
+<div class="bgfx"></div><div class="spot" id="spot"></div>
 
 <nav><div class="wrap">
-  <a class="brand" href="#top"><img src="favicon.png" alt="">Stonk Strategy</a>
+  <a class="brand" href="#top"><img src="logo.png" alt="">Stonk Strategy</a>
   <div class="links"><a href="#how">How it works</a><a href="#radar">Vamp radar</a><a href="#check">Ticker check</a><a href="#prepare">Seal a launch</a><a href="#faq">FAQ</a></div>
   <div class="nr"><a class="btn ghost sm" href="#radar">Vamp radar</a><a class="btn pri sm" href="#prepare">Seal a launch</a></div>
 </div></nav>
@@ -238,28 +267,21 @@ h2 em{font-style:normal;color:var(--acc)}
 <header class="hero" id="top"><div class="wrap">
   <div>
     <div class="kick rv">The privacy layer for StonkFun</div>
-    <h1 class="rv">Launch private,<br><em>trade public.</em></h1>
+    <h1><span class="w" style="animation-delay:.05s">Launch</span> <span class="w" style="animation-delay:.15s">private,</span><br><em><span class="w" style="animation-delay:.3s">trade</span> <span class="w" style="animation-delay:.42s">public.</span></em></h1>
     <p class="lead rv">Wall Street never shows its hand. Neither should your launch. <b>Stonk Strategy</b> launches StonkFun coins from a one-time wallet, sealed until the block, with no dev bag and a vamp radar on every ticker.</p>
     <div class="cta rv"><a class="btn pri" href="#prepare">Seal a launch →</a><a class="btn ghost" href="#check">Check a ticker</a></div>
-    <div class="hstats rv">
+    <div class="hstats rv stg">
       <div><b id="sTotal">—</b><span>coins on StonkFun</span></div>
       <div><b id="sHour">—</b><span>launched in the last hour</span></div>
       <div><b id="sDupe">—</b><span>of recent tickers already taken</span></div>
     </div>
   </div>
-  <div class="vis rv">
-    <div class="kimg"><img src="knight.jpg" alt="Stonk Strategy knight"></div>
-    <div class="filing">
-      <div class="fbar"><span class="t">What a tracker sees</span><div class="tog" id="tog"><button data-m="pub">Public</button><button data-m="prv" class="on">Private</button></div></div>
-      <div class="frows">
-        <div class="fr"><span>Dev wallet</span><b id="f1"></b></div>
-        <div class="fr"><span>Funded by</span><b id="f2"></b></div>
-        <div class="fr"><span>Past launches</span><b id="f3"></b></div>
-        <div class="fr"><span>Dev buy</span><b id="f4"></b></div>
-        <div class="fr"><span>Ticker before launch</span><b id="f5"></b></div>
-      </div>
-      <div class="fnote">Illustration. Flip it to see the difference.</div>
-    </div>
+  <div class="vis rv" id="vis">
+    <div class="floor"></div><div class="halo"></div>
+    <div class="ring r2"></div><div class="ring"></div>
+    <div class="shadow"></div>
+    <div class="par" id="par"><img class="knight" src="logo.png" alt="Stonk Strategy knight"></div>
+    <div class="orb" id="orb"></div>
   </div>
 </div></header>
 
@@ -269,13 +291,13 @@ h2 em{font-style:normal;color:var(--acc)}
   <div class="hd"><div class="kick rv">How it works</div><h2 class="rv">Five moves. <em>None of them yours to track.</em></h2><p class="sub rv">Every launch runs the same play. Click through it.</p></div>
   <div class="steps rv">
     <div class="slist" id="slist"></div>
-    <div class="stage" id="stage"></div>
+    <div class="stage tilt" id="stage"></div>
   </div>
 </div></section>
 
 <section class="blk" style="padding-top:0"><div class="wrap">
   <div class="hd"><div class="kick rv">Public vs private</div><h2 class="rv">Same coin. <em>Different trail.</em></h2></div>
-  <div class="cmp rv">
+  <div class="cmp rv stg">
     <div class="crow h"><div></div><div>Normal launch</div><div>Stonk Strategy</div></div>
     <div class="crow"><div>Who signs the launch</div><div>Your wallet</div><div>A one-time wallet</div></div>
     <div class="crow"><div>Who pays for it</div><div>You, on-chain</div><div>The treasury</div></div>
@@ -299,7 +321,7 @@ h2 em{font-style:normal;color:var(--acc)}
 
 <section class="blk" id="check" style="padding-top:0"><div class="wrap">
   <div class="hd"><div class="kick rv">Ticker check</div><h2 class="rv">Is your ticker <em>still clean?</em></h2><p class="sub rv">Search every StonkFun coin for an exact ticker match before you launch.</p></div>
-  <div class="tool rv" style="max-width:760px">
+  <div class="tool rv tilt" style="max-width:760px">
     <div class="row"><div class="field" style="flex:3"><label for="cIn">Ticker</label><input class="inp tk" id="cIn" maxlength="12" placeholder="e.g. KNIGHT" autocomplete="off"></div><div class="field" style="flex:1;justify-content:flex-end"><label>&nbsp;</label><button class="btn pri" id="cBtn" style="height:46px;justify-content:center">Check</button></div></div>
     <div class="verdict" id="cOut"></div>
   </div>
@@ -379,12 +401,6 @@ const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clea
 const copy=async(s,m)=>{try{await navigator.clipboard.writeText(s);toast(m||'Copied')}catch(e){toast('Copy failed')}};
 function countTo(el,to,fmt){const t0=performance.now();const f=n=>{const k=Math.min(1,(n-t0)/1100),e=1-Math.pow(1-k,4);el.textContent=fmt(to*e);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
 
-/* hero toggle */
-const FM={pub:[['<span class="bad">your wallet</span>'],['<span class="bad">your main wallet</span>'],['<span class="bad">every coin you launched</span>'],['<span class="bad">split across your wallets</span>'],['<span class="bad">visible</span>']],
-          prv:[['<i class="red" style="width:120px"></i>'],['<i class="red" style="width:90px"></i>'],['<span class="good">none linked</span>'],['<span class="good">none</span>'],['<span class="acc">sealed</span>']]};
-function setTog(m){$$('#tog button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));FM[m].forEach((v,i)=>$('#f'+(i+1)).innerHTML=v[0])}
-$('#tog').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setTog(b.dataset.m)});setTog('prv');
-
 /* steps */
 const STEPS=[
  {t:'You seal it',s:'Name, ticker, stock',h:'You write the filing. Nobody sees it.',p:'Pick a name, a ticker and the stock your coin trades against on StonkFun. It stays sealed in the filing until the coin exists.',d:[['You','name · ticker · stock',1],'→',['Filing','sealed',0]]},
@@ -462,10 +478,29 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.targ
 const secs=['how','radar','check','prepare','faq'].map(id=>document.getElementById(id));
 addEventListener('scroll',()=>{let cur='';for(const s of secs)if(s.getBoundingClientRect().top<140)cur=s.id;$$('.links a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur))},{passive:true});
 
+
+/* hero chips: newest real launches floating around the knight */
+const POS=[['left',0,10],['right',8,4],['right',0,40],['left',0,52],['right',3,74],['left',6,82]];let CI=0;
+function chipHTML(t){const k=norm(t.symbol);const n=RECENT.filter(x=>norm(x.symbol)===k).length;const tag=n>1?'<span class="tag vp">COPY</span>':'<span class="tag og">NEW</span>';
+  return `${av(t)}<span><b>$${esc(k.slice(0,10))}</b> ${tag}<small>${esc(t.quote?.symbol||'')} · ${ago(t.createdAt)} ago</small></span>`}
+function orb(){const L=RECENT.filter(t=>!BAD.test((t.name||'')+' '+(t.symbol||'')));if(!L.length)return;
+  if(!$('#orb').children.length){$('#orb').innerHTML=POS.map((p,i)=>`<a class="fchip" style="${p[0]}:${p[1]}%;top:${p[2]}%;animation-delay:${-i*1.1}s" target="_blank" rel="noopener"></a>`).join('');CI=0}
+  [...$('#orb').children].forEach((el,i)=>{const t=L[(CI+i)%L.length];el.innerHTML=chipHTML(t);el.href=`${SITE}/token/${encodeURIComponent(t.mint)}`});CI+=POS.length}
+function rotateChip(){const L=RECENT.filter(t=>!BAD.test((t.name||'')+' '+(t.symbol||'')));const ch=[...$('#orb').children];if(!L.length||!ch.length)return;
+  const el=ch[Math.floor(Math.random()*ch.length)];el.classList.add('out');setTimeout(()=>{const t=L[CI++%L.length];el.innerHTML=chipHTML(t);el.href=`${SITE}/token/${encodeURIComponent(t.mint)}`;el.classList.remove('out')},600)}
+setInterval(rotateChip,2600);
+
+/* parallax, spotlight, tilt */
+const vis=$('#vis');
+addEventListener('mousemove',e=>{const sp=$('#spot');sp.style.left=e.clientX+'px';sp.style.top=e.clientY+'px';
+  const r=vis.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight){const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;$('#par').style.transform=`translate(${x*18}px,${y*14}px) rotateY(${x*8}deg)`;$('#orb').style.transform=`translate(${-x*14}px,${-y*10}px)`}},{passive:true});
+document.addEventListener('mousemove',e=>{const c=e.target.closest&&e.target.closest('.tilt');$$('.tilt').forEach(el=>{if(el!==c)el.style.transform=''});if(!c)return;const r=c.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`perspective(1200px) rotateY(${x*3}deg) rotateX(${-y*3}deg)`},{passive:true});
+const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){[...e.target.children].forEach((c,i)=>setTimeout(()=>c.classList.add('shown'),i*80));so.unobserve(e.target)}}),{threshold:.1});$$('.stg').forEach(el=>so.observe(el));
+
 /* init */
 renderSteps();
 (async()=>{try{await loadRecent(300)}catch(e){$('#rLive').textContent='Offline';$('#groups').innerHTML='<div class="empty">StonkFun isn\'t answering right now. Try again in a moment.</div>'}
-  tape(RECENT);radar();heroStats();quotes()})();
+  tape(RECENT);radar();heroStats();quotes();orb()})();
 setInterval(async()=>{try{await loadRecent(Math.max(RN,300));tape(RECENT);radar()}catch(e){}},60000);
 </script>
 </body>
