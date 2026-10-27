@@ -115,6 +115,12 @@ h1 em .w{background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-backgr
 .hstats b{transition:color .3s}
 .kick{overflow:hidden}
 
+.band{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;margin:0 0 0;background:rgba(7,19,24,.5)}
+.bt{display:flex;align-items:center;gap:34px;width:max-content;animation:scroll 46s linear infinite}
+.bt span{font-size:clamp(36px,5vw,64px);font-weight:800;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1.2px rgba(105,170,193,.55);white-space:nowrap}
+.bt span.f{color:var(--acc);-webkit-text-stroke:0}
+.bt i{font-style:normal;color:var(--up);font-size:22px}
+
 /* sections */
 section.blk{padding:96px 0}
 .hd{max-width:720px;margin-bottom:40px}
@@ -144,7 +150,12 @@ h2 em{font-style:normal;color:var(--acc)}
 .node small{display:block;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
 .node b{font-size:14px}
 .node.hl{border-color:var(--acc);box-shadow:0 0 0 4px rgba(105,170,193,.08)}
-.arr{color:var(--acc);font:700 18px 'JetBrains Mono'}
+.arr{display:inline-block;width:42px;height:2px;background:repeating-linear-gradient(90deg,var(--acc) 0 7px,transparent 7px 13px);background-size:13px 2px;animation:flow .5s linear infinite;position:relative}
+.arr::after{content:'';position:absolute;right:-2px;top:-4px;border-left:7px solid var(--acc);border-top:5px solid transparent;border-bottom:5px solid transparent}
+@keyframes flow{to{background-position:13px 0}}
+.node{animation:pop .5s cubic-bezier(.2,.7,.2,1) backwards}
+.diagram>*:nth-child(2){animation-delay:.08s}.diagram>*:nth-child(3){animation-delay:.16s}.diagram>*:nth-child(4){animation-delay:.24s}.diagram>*:nth-child(5){animation-delay:.32s}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.96)}}
 .x{color:var(--dn);font-weight:800}
 .stage .fade{animation:fin .5s cubic-bezier(.2,.7,.2,1)}
 @keyframes fin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -173,7 +184,14 @@ h2 em{font-style:normal;color:var(--acc)}
 .rstats div:last-child{border:0}
 .rstats b{display:block;font:700 24px 'JetBrains Mono',monospace;letter-spacing:-.03em}
 .rstats span{font-size:12.5px;color:var(--mut)}
-.groups{max-height:560px;overflow:auto}
+.groups{max-height:520px;overflow:auto}
+.rgrid{display:grid;grid-template-columns:400px 1fr}
+.rwrap{position:relative;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;gap:12px;background:radial-gradient(circle at 50% 45%,rgba(105,170,193,.07),transparent 65%)}
+#rc{width:356px;height:356px;cursor:crosshair}
+.rtip{position:absolute;pointer-events:none;background:#0b1d24;border:1px solid var(--line2);border-radius:9px;padding:6px 10px;font:700 12px 'JetBrains Mono',monospace;opacity:0;transform:translate(-50%,-130%);transition:opacity .15s;white-space:nowrap}
+.rleg{display:flex;gap:16px;font-size:11px;color:var(--mut)}
+.rleg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.grp.hl{background:rgba(105,170,193,.07)}
 .grp{border-bottom:1px solid var(--line)}
 .grp:last-child{border:0}
 .gh{display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;padding:14px 20px;cursor:pointer;transition:background .2s}
@@ -223,6 +241,9 @@ h2 em{font-style:normal;color:var(--acc)}
 .card2 .fbar{background:#08171c}
 .pimg{width:46px;height:46px;border-radius:12px;background:var(--card2);border:1px dashed var(--line2);display:grid;place-items:center;color:var(--dim);font-size:20px;overflow:hidden;cursor:pointer;flex:none}
 .pimg img{width:100%;height:100%;object-fit:cover}
+.stamp{position:absolute;right:18px;top:64px;z-index:3;font:800 20px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--up);border:3px solid var(--up);border-radius:10px;padding:6px 12px;transform:rotate(-12deg) scale(2.4);opacity:0;pointer-events:none;box-shadow:0 0 30px rgba(74,222,128,.25),inset 0 0 12px rgba(74,222,128,.2)}
+.stamp.on{animation:stampIn .45s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes stampIn{to{opacity:.95;transform:rotate(-12deg) scale(1)}}
 .seal{font:700 13px 'JetBrains Mono',monospace;word-break:break-all;color:var(--acc2);background:#05121a;border:1px solid var(--line2);border-radius:10px;padding:12px;margin-top:10px;line-height:1.5}
 .ok{color:var(--up);font-weight:700}.no{color:var(--dn);font-weight:700}
 .tabs2{display:flex;gap:6px;margin-bottom:16px}
@@ -247,6 +268,7 @@ h2 em{font-style:normal;color:var(--acc)}
   nav .wrap{grid-template-columns:1fr auto}.links{display:none}
   .hero .wrap,.steps,.tools,.compose{grid-template-columns:1fr}
   .vis{height:440px}.knight{width:min(300px,62%)}.ring{width:320px;height:320px;margin-left:-160px}.ring.r2{width:440px;height:440px;margin-left:-220px}.fchip:nth-child(n+5){display:none}.spot{display:none}
+  .rgrid{grid-template-columns:1fr}.rwrap{border-right:0;border-bottom:1px solid var(--line)}#rc{width:min(320px,80vw);height:min(320px,80vw)}
   .rstats{grid-template-columns:1fr}.rstats div{border-right:0;border-bottom:1px solid var(--line)}
   .crow{grid-template-columns:1fr 1fr 1fr}.crow>div{padding:12px;font-size:13px}
   .cl{grid-template-columns:1fr auto}.cl .c3,.cl .c4{display:none}
@@ -270,11 +292,6 @@ h2 em{font-style:normal;color:var(--acc)}
     <h1><span class="w" style="animation-delay:.05s">Launch</span> <span class="w" style="animation-delay:.15s">private,</span><br><em><span class="w" style="animation-delay:.3s">trade</span> <span class="w" style="animation-delay:.42s">public.</span></em></h1>
     <p class="lead rv">Wall Street never shows its hand. Neither should your launch. <b>Stonk Strategy</b> launches StonkFun coins from a one-time wallet, sealed until the block, with no dev bag and a vamp radar on every ticker.</p>
     <div class="cta rv"><a class="btn pri" href="#prepare">Seal a launch →</a><a class="btn ghost" href="#check">Check a ticker</a></div>
-    <div class="hstats rv stg">
-      <div><b id="sTotal">—</b><span>coins on StonkFun</span></div>
-      <div><b id="sHour">—</b><span>launched in the last hour</span></div>
-      <div><b id="sDupe">—</b><span>of recent tickers already taken</span></div>
-    </div>
   </div>
   <div class="vis rv" id="vis">
     <div class="floor"></div><div class="halo"></div>
@@ -309,12 +326,13 @@ h2 em{font-style:normal;color:var(--acc)}
   </div>
 </div></section>
 
-<section class="blk" id="radar" style="padding-top:0"><div class="wrap">
+<div class="band" aria-hidden="true"><div class="bt"><span>Launch private</span><i>◆</i><span class="f">Trade public</span><i>◆</i><span>No dev wallet</span><i>◆</i><span class="f">No vamps</span><i>◆</i><span>Sealed until the block</span><i>◆</i><span>Launch private</span><i>◆</i><span class="f">Trade public</span><i>◆</i><span>No dev wallet</span><i>◆</i><span class="f">No vamps</span><i>◆</i><span>Sealed until the block</span><i>◆</i></div></div>
+<section class="blk" id="radar"><div class="wrap">
   <div class="hd"><div class="kick rv">Vamp radar</div><h2 class="rv">Every ticker that got <em>copied</em>.</h2><p class="sub rv">The newest launches on StonkFun, grouped by ticker. The first one gets the stamp. Everything after it is a copy.</p></div>
   <div class="panel rv">
     <div class="ptop"><span class="live" id="rLive">Loading</span><div class="seg" id="rWin"><button data-n="100">Last 100</button><button data-n="300" class="on">Last 300</button><button data-n="500">Last 500</button></div></div>
     <div class="rstats"><div><b id="rScan">—</b><span>launches scanned</span></div><div><b id="rGroups">—</b><span>tickers launched more than once</span></div><div><b id="rCopies">—</b><span>copies</span></div></div>
-    <div class="groups" id="groups"><div class="empty">Reading StonkFun…</div></div>
+    <div class="rgrid"><div class="rwrap"><canvas id="rc" width="760" height="760"></canvas><div class="rtip" id="rtip"></div><div class="rleg mono"><span><i style="background:var(--up)"></i>first</span><span><i style="background:var(--dn)"></i>copied · bigger = more copies</span></div></div><div class="groups" id="groups"><div class="empty">Reading StonkFun…</div></div></div>
   </div>
   <div class="src mono" id="rSrc"></div>
 </div></section>
@@ -346,7 +364,7 @@ h2 em{font-style:normal;color:var(--acc)}
           <div class="row" style="gap:8px"><button class="btn ghost sm" id="cpSeal">Copy seal</button><button class="btn ghost sm" id="cpSecret">Copy secret</button><a class="btn pri sm" id="xSeal" target="_blank" rel="noopener">Post seal on 𝕏</a></div>
         </div>
       </div>
-      <div class="card2">
+      <div class="card2" id="fcard" style="position:relative"><div class="stamp" id="stamp">SEALED</div>
         <div class="fbar"><span class="t">Filing · StonkFun</span><span class="live" style="font-size:10px">Sealed</span></div>
         <div style="display:flex;gap:14px;align-items:center;padding:18px 16px 8px"><div class="pimg" id="cImg" style="border-style:solid;cursor:default">?</div><div><div style="font-weight:800;font-size:18px;letter-spacing:-.02em" id="cName">Your coin</div><div class="mono acc" style="font-size:13px" id="cTk">$██████</div></div></div>
         <div class="frows">
@@ -410,7 +428,7 @@ const STEPS=[
  {t:'Vamps get flagged',s:'One ticker, one original',h:'Copies show up on the radar.',p:'Every coin launched after yours with the same ticker is listed on the vamp radar with its time, so everyone can see which one came first.',d:[['Your coin','original',1],'→',['Copy #1','flagged',0],'→',['Copy #2','flagged',0]]}];
 let SI=0,ST;
 function renderSteps(){ $('#slist').innerHTML=STEPS.map((s,i)=>`<button class="sbtn ${i===SI?'on':''}" data-i="${i}"><span class="n">0${i+1}</span><span><b>${s.t}</b><small>${s.s}</small></span><i class="pr"></i></button>`).join('');
-  const s=STEPS[SI];$('#stage').innerHTML=`<div class="fade"><div class="kick">Step 0${SI+1}</div><h3>${s.h}</h3><p>${s.p}</p><div class="diagram">${s.d.map(x=>typeof x==='string'?(x?`<span class="arr">${x}</span>`:'<span style="width:14px"></span>'):`<div class="node ${x[2]?'hl':''}"><small>${x[0]}</small><b>${x[1]}</b></div>`).join('')}</div></div>`;
+  const s=STEPS[SI];$('#stage').innerHTML=`<div class="fade"><div class="kick">Step 0${SI+1}</div><h3>${s.h}</h3><p>${s.p}</p><div class="diagram">${s.d.map(x=>typeof x==='string'?(x?`<span class="arr"></span>`:'<span style="width:14px"></span>'):`<div class="node ${x[2]?'hl':''}"><small>${x[0]}</small><b>${x[1]}</b></div>`).join('')}</div></div>`;
   clearTimeout(ST);ST=setTimeout(()=>{SI=(SI+1)%STEPS.length;renderSteps()},6000)}
 $('#slist').addEventListener('click',e=>{const b=e.target.closest('.sbtn');if(b){SI=+b.dataset.i;renderSteps()}});
 
@@ -427,17 +445,42 @@ let RN=300;
 function radar(){const list=RECENT.slice(0,RN);const G=groupsOf(list);const copies=G.reduce((a,[,v])=>a+v.length-1,0);
   $('#rScan').textContent=list.length.toLocaleString('en-US');$('#rGroups').textContent=G.length;$('#rCopies').textContent=copies;
   const span=list.length?ago(list.at(-1).createdAt):'';$('#rLive').textContent=list.length?`Live · last ${span}`:'Offline';
-  if(!G.length){$('#groups').innerHTML='<div class="empty">No repeated tickers in this window.</div>';return}
+  if(!list.length){BLIPS=[];$('#groups').innerHTML='<div class="empty">StonkFun isn\'t answering right now. Try again in a moment.</div>';return}
+  if(!G.length){BLIPS=[];$('#groups').innerHTML='<div class="empty">No repeated tickers in this window.</div>';return}
   $('#groups').innerHTML=G.map(([k,v],gi)=>{const clean=BAD.test(k+' '+v.map(t=>t.name).join(' '));const K=clean?'█'.repeat(Math.min(k.length,6)):esc(k.slice(0,14));
     return `<div class="grp ${gi===0?'open':''}"><div class="gh"><span class="tk">$${K}</span><span class="stack">${v.slice(0,6).map(t=>av(t)).join('')}</span><span class="cnt">${v.length}×</span><span class="car">›</span></div>
     <div class="gb">${v.map((t,i)=>`<a class="cl" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener"><span class="nm">${av(t)}<span>${clean?'—':esc((t.name||'').slice(0,34))}</span></span><span class="q mono muted c3" style="font-size:12px">${esc(t.quote?.symbol||'')}</span><span class="mono muted c4" style="font-size:12px">${usd(t.market?.marketCapUsd)} · ${ago(t.createdAt)} ago</span><span class="tag ${i?'vp':'og'}">${i?'COPY #'+i:'FIRST'}</span></a>`).join('')}</div></div>`}).join('');
+  blips(G,list);
   $('#rSrc').textContent=`StonkFun public API · newest ${list.length} launches · refreshed ${new Date().toLocaleTimeString()}`}
+
+/* radar scope */
+let BLIPS=[],SWEEP=0;const rc=$('#rc'),rx=rc.getContext('2d');
+const hsh=s=>{let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return (h>>>0)/4294967295};
+function blips(G,list){const span=Math.max(1,Date.now()-new Date(list.at(-1)?.createdAt||Date.now()));
+  BLIPS=G.map(([k,v],i)=>{const age=(Date.now()-new Date(v.at(-1).createdAt))/span;return {k,n:v.length,i,a:hsh(k)*Math.PI*2,r:.14+.8*Math.min(1,age),lit:0,og:v[0]}})}
+function drawRadar(){const W=rc.width,C=W/2,R=C-14;rx.clearRect(0,0,W,W);
+  rx.strokeStyle='rgba(105,170,193,.16)';rx.lineWidth=1.5;for(let i=1;i<=4;i++){rx.beginPath();rx.arc(C,C,R*i/4,0,Math.PI*2);rx.stroke()}
+  rx.beginPath();rx.moveTo(C-R,C);rx.lineTo(C+R,C);rx.moveTo(C,C-R);rx.lineTo(C,C+R);rx.stroke();
+  SWEEP=(SWEEP+0.018)%(Math.PI*2);
+  const g=rx.createConicGradient?rx.createConicGradient(SWEEP-0.9,C,C):null;
+  if(g){g.addColorStop(0,'rgba(105,170,193,0)');g.addColorStop(0.143,'rgba(105,170,193,.32)');g.addColorStop(0.1431,'rgba(105,170,193,0)');rx.fillStyle=g;rx.beginPath();rx.moveTo(C,C);rx.arc(C,C,R,SWEEP-0.9,SWEEP);rx.closePath();rx.fill()}
+  rx.strokeStyle='rgba(182,224,238,.8)';rx.lineWidth=2;rx.beginPath();rx.moveTo(C,C);rx.lineTo(C+Math.cos(SWEEP)*R,C+Math.sin(SWEEP)*R);rx.stroke();
+  for(const b of BLIPS){const d=((SWEEP-b.a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);if(d<0.05)b.lit=1;b.lit=Math.max(.28,b.lit*.985);
+    const x=C+Math.cos(b.a)*b.r*R,y=C+Math.sin(b.a)*b.r*R,sz=4+Math.min(14,b.n*2.2);b.x=x/W;b.y=y/W;
+    rx.globalAlpha=b.lit;rx.fillStyle='rgba(248,113,113,.22)';rx.beginPath();rx.arc(x,y,sz*2.2,0,Math.PI*2);rx.fill();
+    rx.fillStyle='#f87171';rx.beginPath();rx.arc(x,y,sz,0,Math.PI*2);rx.fill();
+    rx.fillStyle='#4ade80';rx.beginPath();rx.arc(x,y,Math.max(2.5,sz*.35),0,Math.PI*2);rx.fill();rx.globalAlpha=1}
+  rx.fillStyle='#69aac1';rx.beginPath();rx.arc(C,C,5,0,Math.PI*2);rx.fill();
+  requestAnimationFrame(drawRadar)}
+requestAnimationFrame(drawRadar);
+function nearBlip(e){const r=rc.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;let best=null,bd=.05;for(const b of BLIPS){const d=Math.hypot(b.x-x,b.y-y);if(d<bd){bd=d;best=b}}return {best,x:e.clientX-r.left,y:e.clientY-r.top}}
+rc.addEventListener('mousemove',e=>{const {best,x,y}=nearBlip(e);const t=$('#rtip');if(!best){t.style.opacity=0;return}const K=BAD.test(best.k)?'█████':esc(best.k.slice(0,12));t.innerHTML=`$${K} · ${best.n}× · <span style="color:var(--mut)">click</span>`;const r=rc.getBoundingClientRect(),w=rc.parentElement.getBoundingClientRect();t.style.left=(r.left-w.left+x)+'px';t.style.top=(r.top-w.top+y)+'px';t.style.opacity=1});
+rc.addEventListener('mouseleave',()=>$('#rtip').style.opacity=0);
+rc.addEventListener('click',e=>{const {best}=nearBlip(e);if(!best)return;const el=$$('#groups .grp')[best.i];if(!el)return;$$('#groups .grp').forEach(g=>g.classList.remove('hl'));el.classList.add('open','hl');const box=$('#groups');box.scrollTo({top:el.offsetTop-box.offsetTop-8,behavior:'smooth'})});
+
 $('#groups').addEventListener('click',e=>{const h=e.target.closest('.gh');if(h)h.parentElement.classList.toggle('open')});
 $('#rWin').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;$$('#rWin button').forEach(x=>x.classList.toggle('on',x===b));RN=+b.dataset.n;
   if(RECENT.length<RN){$('#groups').innerHTML='<div class="empty">Reading StonkFun…</div>';try{await loadRecent(RN)}catch(e){}}radar()});
-function heroStats(){if(TOTAL!=null)countTo($('#sTotal'),TOTAL,n=>Math.round(n).toLocaleString('en-US'));
-  const hr=RECENT.filter(t=>Date.now()-new Date(t.createdAt)<3600e3).length;if(RECENT.length)countTo($('#sHour'),hr,n=>Math.round(n)+(hr>=RECENT.length?'+':''));
-  const L=RECENT.slice(0,300);if(L.length){const G=groupsOf(L);const dup=G.reduce((a,[,v])=>a+v.length-1,0);const pc=dup/L.length*100;countTo($('#sDupe'),pc,n=>n.toFixed(1)+'%')}}
 function quotes(){const c={};RECENT.forEach(t=>{const q=t.quote?.symbol;if(q&&(t.quote?.category==='xstock'||/X$/.test(q)))c[q]=(c[q]||0)+1});
   let L=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,10);for(const d of ['SPYX','QQQX','TSLAX','NVDAX','GOOGLX','GLDX'])if(!L.includes(d)&&L.length<10)L.push(d);
   const fmt=q=>q.endsWith('X')?q.slice(0,-1)+'x':q;$('#qpick').innerHTML=L.map((q,i)=>`<button data-q="${esc(fmt(q))}" class="${i===0?'on':''}">${esc(fmt(q))}</button>`).join('');$('#cQ').textContent=fmt(L[0])}
@@ -459,15 +502,16 @@ const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(
 async function sha(s){return hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))}
 const msg=(tk,nm,salt)=>`STONK-STRATEGY-SEAL|${norm(tk)}|${String(nm).trim()}|${salt}`;
 function syncCard(){const n=$('#pName').value.trim(),t=norm($('#pTk').value);$('#cName').textContent=n||'Your coin';$('#cTk').textContent=t?'$'+'█'.repeat(Math.min(t.length,8)):'$██████';resetSeal()}
-function resetSeal(){if(!$('#sealOut').classList.contains('hide')){$('#sealOut').classList.add('hide');$('#cSeal').textContent='not sealed yet'}}
+function resetSeal(){$('#stamp').classList.remove('on');if(!$('#sealOut').classList.contains('hide')){$('#sealOut').classList.add('hide');$('#cSeal').textContent='not sealed yet'}}
+function scramble(el,final){const H='0123456789abcdef';let f=0;const n=final.length;const t=setInterval(()=>{f++;const k=Math.floor(n*f/18);el.textContent=final.slice(0,k)+Array.from({length:n-k},()=>H[Math.random()*16|0]).join('');if(k>=n){clearInterval(t);el.textContent=final}},35)}
 $('#pName').addEventListener('input',syncCard);$('#pTk').addEventListener('input',syncCard);
 $('#pImg').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);$('#pImgBox').innerHTML=`<img src="${u}" alt="">`;$('#cImg').innerHTML=`<img src="${u}" alt="">`});
 $('#sealBtn').addEventListener('click',async()=>{const n=$('#pName').value.trim(),t=norm($('#pTk').value);if(!n){$('#pName').focus();toast('Add a name');return}if(!t){$('#pTk').focus();toast('Add a ticker');return}
   const salt=hex(crypto.getRandomValues(new Uint8Array(16)));const h=await sha(msg(t,n,salt));
-  $('#sealHash').textContent=h;$('#sealSalt').textContent=salt;$('#cSeal').textContent=h.slice(0,10)+'…'+h.slice(-6);$('#sealOut').classList.remove('hide');
+  scramble($('#sealHash'),h);scramble($('#sealSalt'),salt);const st=$('#stamp');st.classList.remove('on');void st.offsetWidth;st.classList.add('on');$('#cSeal').textContent=h.slice(0,10)+'…'+h.slice(-6);$('#sealOut').classList.remove('hide');
   $('#xSeal').href='https://x.com/intent/post?text='+encodeURIComponent(`Sealed a StonkFun launch. The ticker stays private until the block.\n\nseal: ${h}`);
   window._seal={t,n,salt,h};toast('Sealed')});
-$('#cpSeal').addEventListener('click',()=>copy($('#sealHash').textContent,'Seal copied'));
+$('#cpSeal').addEventListener('click',()=>copy(window._seal?.h||'','Seal copied'));
 $('#cpSecret').addEventListener('click',()=>copy(`ticker: ${window._seal?.t}\nname: ${window._seal?.n}\nsecret: ${window._seal?.salt}\nseal: ${window._seal?.h}`,'Secret copied'));
 $$('.tabs2 button').forEach(b=>b.addEventListener('click',()=>{$$('.tabs2 button').forEach(x=>x.classList.toggle('on',x===b));$('#tMake').classList.toggle('hide',b.dataset.t!=='make');$('#tVerify').classList.toggle('hide',b.dataset.t!=='verify')}));
 $('#vBtn').addEventListener('click',async()=>{const o=$('#vOut');const h=await sha(msg($('#vTk').value,$('#vName').value,$('#vSalt').value.trim()));const want=$('#vHash').value.trim().toLowerCase();o.className='verdict show';
@@ -500,7 +544,7 @@ const so=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){[...e.
 /* init */
 renderSteps();
 (async()=>{try{await loadRecent(300)}catch(e){$('#rLive').textContent='Offline';$('#groups').innerHTML='<div class="empty">StonkFun isn\'t answering right now. Try again in a moment.</div>'}
-  tape(RECENT);radar();heroStats();quotes();orb()})();
+  tape(RECENT);radar();quotes();orb()})();
 setInterval(async()=>{try{await loadRecent(Math.max(RN,300));tape(RECENT);radar()}catch(e){}},60000);
 </script>
 </body>
