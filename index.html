@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stonk Strategy</title>
+<meta name="description" content="The privacy layer for StonkFun. Launch private, trade public.">
+<link rel="icon" type="image/png" href="favicon.png">
+<meta property="og:title" content="Stonk Strategy">
+<meta property="og:description" content="Wall Street never shows its hand. Neither should your launch.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050c10;--bg2:#071318;--card:#0b1a20;--card2:#0e2229;--line:#17303a;--line2:#21414d;--tx:#eef6f8;--mut:#8aa6b0;--dim:#5d7781;--acc:#69aac1;--acc2:#b6e0ee;--up:#4ade80;--dn:#f87171}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.bgfx{position:fixed;inset:0;z-index:-1;background:radial-gradient(900px 600px at 78% -10%,rgba(105,170,193,.13),transparent 60%),radial-gradient(700px 500px at -10% 30%,rgba(105,170,193,.06),transparent 60%),var(--bg)}
+.bgfx::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(105,170,193,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(105,170,193,.045) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 75%)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(5,12,16,.72);border-bottom:1px solid rgba(23,48,58,.7)}
+nav .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:66px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.03em;font-size:17px}
+.brand img{width:32px;height:32px;border-radius:9px}
+.links{display:flex;gap:4px;background:rgba(14,34,41,.6);border:1px solid var(--line);border-radius:999px;padding:4px}
+.links a{padding:7px 14px;border-radius:999px;font-size:13.5px;color:var(--mut);font-weight:600;transition:.2s}
+.links a:hover,.links a.on{color:var(--tx);background:var(--card2)}
+.nr{justify-self:end;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:11px;font-weight:700;font-size:14px;border:1px solid transparent;cursor:pointer;transition:transform .15s,background .2s,border-color .2s;font-family:inherit;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--acc);color:#04141a}.btn.pri:hover{background:#7fbcd2}
+.btn.ghost{background:transparent;color:var(--tx);border-color:var(--line2)}.btn.ghost:hover{border-color:var(--acc);background:rgba(105,170,193,.08)}
+.btn.sm{height:36px;padding:0 14px;font-size:13px;border-radius:10px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+/* hero */
+.hero{padding:76px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
+.kick{font:700 12px 'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);display:flex;align-items:center;gap:10px}
+.kick::before{content:'';width:22px;height:1px;background:var(--acc)}
+h1{font-size:clamp(44px,6.4vw,78px);line-height:.98;letter-spacing:-.05em;margin:18px 0 20px;font-weight:800}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:18px;color:#b5cbd2;max-width:540px;margin:0 0 28px}
+.lead b{color:var(--tx)}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.hstats{display:flex;gap:28px;margin-top:36px;flex-wrap:wrap}
+.hstats div{min-width:120px}
+.hstats b{display:block;font:700 26px 'JetBrains Mono',monospace;letter-spacing:-.03em}
+.hstats span{font-size:12.5px;color:var(--mut)}
+.vis{position:relative;min-height:560px}
+.kimg{position:absolute;right:0;top:0;width:88%;aspect-ratio:1;border-radius:28px;overflow:hidden;border:1px solid var(--line2);box-shadow:0 40px 90px rgba(0,0,0,.55)}
+.kimg img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.5);transform-origin:2% 46%;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.vis:hover .kimg img{transform:scale(1.56)}
+.kimg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(5,12,16,.6))}
+.filing{position:absolute;left:0;bottom:0;width:min(350px,64%);background:linear-gradient(165deg,rgba(16,38,46,.96),rgba(8,20,25,.97));border:1px solid var(--line2);border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,.6);overflow:hidden;backdrop-filter:blur(10px)}
+.fbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.fbar .t{font:700 10.5px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--mut);text-transform:uppercase}
+.tog{display:flex;background:#06141a;border:1px solid var(--line);border-radius:9px;padding:3px}
+.tog button{border:0;background:none;color:var(--mut);font:700 11.5px Inter;padding:6px 10px;border-radius:7px;cursor:pointer;transition:.2s}
+.tog button.on{background:var(--acc);color:#04141a}
+.frows{padding:6px 16px 14px}
+.fr{display:flex;justify-content:space-between;align-items:center;height:38px;border-bottom:1px solid rgba(23,48,58,.6);font-size:13.5px}
+.fr:last-child{border:0}
+.fr span{color:var(--mut);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.fr b{font-weight:700;font-size:13px;transition:color .3s}
+.red{display:inline-block;height:15px;border-radius:4px;background:#010507;box-shadow:inset 0 0 0 1px rgba(105,170,193,.35);vertical-align:middle;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.bad{color:var(--dn)}.good{color:var(--up)}.acc{color:var(--acc)}
+.fnote{font-size:11px;color:var(--dim);padding:0 16px 12px}
+
+/* tape */
+.tape{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(7,19,24,.7);overflow:hidden;position:relative}
+.tape .tl{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;gap:8px;padding:0 44px 0 16px;background:linear-gradient(90deg,#071318 78%,rgba(7,19,24,0));font:700 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--up)}
+.tape .tl i{width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 10px var(--up);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.track{display:flex;gap:10px;padding:12px 0 12px 190px;width:max-content;animation:scroll 90s linear infinite}
+.tape:hover .track{animation-play-state:paused}
+@keyframes scroll{to{transform:translateX(-50%)}}
+.chip{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:13px;white-space:nowrap;transition:border-color .2s}
+.chip:hover{border-color:var(--acc)}
+.chip img,.chip .ph{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--card2);flex:none}
+.chip b{font-weight:700}.chip small{color:var(--mut);font-size:11.5px}
+.chip .q{font:700 10.5px 'JetBrains Mono',monospace;color:var(--acc);background:rgba(105,170,193,.1);padding:2px 6px;border-radius:5px}
+
+/* sections */
+section.blk{padding:96px 0}
+.hd{max-width:720px;margin-bottom:40px}
+h2{font-size:clamp(32px,4.4vw,50px);line-height:1.04;letter-spacing:-.045em;margin:14px 0 12px;font-weight:800}
+h2 em{font-style:normal;color:var(--acc)}
+.sub{color:var(--mut);font-size:17px;margin:0}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.shown{opacity:1;transform:none}
+
+/* steps */
+.steps{display:grid;grid-template-columns:330px 1fr;gap:28px}
+.slist{display:flex;flex-direction:column;gap:8px}
+.sbtn{display:flex;gap:14px;align-items:flex-start;text-align:left;padding:16px 18px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--tx);cursor:pointer;font-family:inherit;transition:.25s;position:relative;overflow:hidden}
+.sbtn .n{font:700 12px 'JetBrains Mono',monospace;color:var(--dim);padding-top:2px}
+.sbtn b{display:block;font-size:15px;letter-spacing:-.01em}
+.sbtn small{display:block;color:var(--mut);font-size:13px;margin-top:2px}
+.sbtn.on{border-color:var(--acc);background:var(--card2)}
+.sbtn.on .n{color:var(--acc)}
+.sbtn .pr{position:absolute;left:0;bottom:0;height:2px;background:var(--acc);width:0}
+.sbtn.on .pr{animation:fill 6s linear forwards}
+@keyframes fill{to{width:100%}}
+.stage{border:1px solid var(--line2);border-radius:20px;background:linear-gradient(165deg,var(--card2),var(--card));padding:30px;position:relative;overflow:hidden;min-height:400px}
+.stage h3{font-size:26px;letter-spacing:-.03em;margin:8px 0 10px}
+.stage p{color:#b5cbd2;margin:0 0 22px;max-width:560px}
+.diagram{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.node{border:1px solid var(--line2);background:#071419;border-radius:12px;padding:12px 14px;min-width:130px}
+.node small{display:block;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
+.node b{font-size:14px}
+.node.hl{border-color:var(--acc);box-shadow:0 0 0 4px rgba(105,170,193,.08)}
+.arr{color:var(--acc);font:700 18px 'JetBrains Mono'}
+.x{color:var(--dn);font-weight:800}
+.stage .fade{animation:fin .5s cubic-bezier(.2,.7,.2,1)}
+@keyframes fin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* compare */
+.cmp{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
+.crow{display:grid;grid-template-columns:1.1fr 1fr 1fr;border-bottom:1px solid var(--line)}
+.crow:last-child{border:0}
+.crow>div{padding:16px 20px;font-size:14.5px}
+.crow.h>div{font:700 11px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);background:#08161b}
+.crow.h>div:last-child{color:var(--acc)}
+.crow>div:first-child{color:var(--mut)}
+.crow>div:last-child{background:rgba(105,170,193,.05)}
+.crow:hover>div{background:rgba(105,170,193,.035)}
+
+/* radar */
+.panel{border:1px solid var(--line2);border-radius:20px;background:var(--card);overflow:hidden}
+.ptop{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--line)}
+.live{display:inline-flex;align-items:center;gap:8px;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--up);text-transform:uppercase}
+.live::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 10px var(--up);animation:pulse 1.6s infinite}
+.seg{display:flex;background:#06141a;border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;color:var(--mut);font:600 12.5px Inter;padding:7px 12px;border-radius:8px;cursor:pointer}
+.seg button.on{background:var(--card2);color:var(--tx)}
+.rstats{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+.rstats div{padding:18px 20px;border-right:1px solid var(--line)}
+.rstats div:last-child{border:0}
+.rstats b{display:block;font:700 24px 'JetBrains Mono',monospace;letter-spacing:-.03em}
+.rstats span{font-size:12.5px;color:var(--mut)}
+.groups{max-height:560px;overflow:auto}
+.grp{border-bottom:1px solid var(--line)}
+.grp:last-child{border:0}
+.gh{display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;padding:14px 20px;cursor:pointer;transition:background .2s}
+.gh:hover{background:rgba(105,170,193,.04)}
+.gh .tk{font:700 16px 'JetBrains Mono',monospace;letter-spacing:-.02em}
+.stack{display:flex}
+.stack img,.stack .ph{width:26px;height:26px;border-radius:50%;border:2px solid var(--card);margin-left:-8px;object-fit:cover;background:var(--card2)}
+.stack>*:first-child{margin-left:0}
+.cnt{font:700 12px 'JetBrains Mono',monospace;color:var(--dn);background:rgba(248,113,113,.1);padding:4px 9px;border-radius:7px}
+.car{color:var(--dim);transition:transform .25s}
+.grp.open .car{transform:rotate(90deg)}
+.gb{display:none;padding:0 20px 14px}
+.grp.open .gb{display:block;animation:fin .35s}
+.cl{display:grid;grid-template-columns:1fr auto auto auto;gap:14px;align-items:center;padding:9px 12px;border-radius:10px;font-size:13.5px}
+.cl:hover{background:var(--card2)}
+.cl .nm{display:flex;align-items:center;gap:10px;min-width:0}
+.cl .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl img,.cl .ph{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none;background:var(--card2)}
+.tag{font:700 10.5px 'JetBrains Mono',monospace;padding:3px 7px;border-radius:6px;letter-spacing:.04em}
+.tag.og{color:var(--up);background:rgba(74,222,128,.1)}
+.tag.vp{color:var(--dn);background:rgba(248,113,113,.08)}
+.muted{color:var(--mut)}
+.empty{padding:40px 20px;text-align:center;color:var(--mut)}
+.src{font-size:12px;color:var(--dim);margin-top:12px}
+
+/* tools */
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.tool{border:1px solid var(--line2);border-radius:20px;background:linear-gradient(165deg,var(--card2),var(--card));padding:26px}
+.tool h3{font-size:22px;letter-spacing:-.03em;margin:6px 0 6px}
+.tool p{color:var(--mut);margin:0 0 18px;font-size:14.5px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field label{font:700 10.5px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.inp{height:46px;border-radius:11px;border:1px solid var(--line2);background:#06141a;color:var(--tx);padding:0 14px;font:600 15px Inter;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+.inp:focus{border-color:var(--acc);box-shadow:0 0 0 4px rgba(105,170,193,.12)}
+.inp.tk{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.02em}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.verdict{margin-top:16px;border-radius:14px;border:1px solid var(--line);background:#071419;padding:16px;display:none}
+.verdict.show{display:block;animation:fin .35s}
+.verdict h4{margin:0 0 4px;font-size:18px;letter-spacing:-.02em}
+.verdict .ls{margin-top:10px;display:flex;flex-direction:column;gap:2px;max-height:220px;overflow:auto}
+.qpick{display:flex;flex-wrap:wrap;gap:6px}
+.qpick button{border:1px solid var(--line2);background:#06141a;color:var(--mut);font:700 12px 'JetBrains Mono',monospace;padding:7px 10px;border-radius:8px;cursor:pointer;transition:.2s}
+.qpick button.on{border-color:var(--acc);color:var(--tx);background:rgba(105,170,193,.12)}
+.compose{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card2{border:1px solid var(--line2);border-radius:18px;background:#071419;overflow:hidden}
+.card2 .fbar{background:#08171c}
+.pimg{width:46px;height:46px;border-radius:12px;background:var(--card2);border:1px dashed var(--line2);display:grid;place-items:center;color:var(--dim);font-size:20px;overflow:hidden;cursor:pointer;flex:none}
+.pimg img{width:100%;height:100%;object-fit:cover}
+.seal{font:700 13px 'JetBrains Mono',monospace;word-break:break-all;color:var(--acc2);background:#05121a;border:1px solid var(--line2);border-radius:10px;padding:12px;margin-top:10px;line-height:1.5}
+.ok{color:var(--up);font-weight:700}.no{color:var(--dn);font-weight:700}
+.tabs2{display:flex;gap:6px;margin-bottom:16px}
+.tabs2 button{border:1px solid var(--line2);background:none;color:var(--mut);font:600 13px Inter;padding:8px 14px;border-radius:9px;cursor:pointer}
+.tabs2 button.on{background:var(--card2);color:var(--tx);border-color:var(--acc)}
+.hide{display:none!important}
+
+/* faq + end */
+.faq details{border-bottom:1px solid var(--line);padding:4px 0}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-weight:700;font-size:17px;letter-spacing:-.01em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';font:500 22px 'JetBrains Mono';color:var(--acc);transition:transform .25s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq p{color:#b5cbd2;margin:0 0 18px;max-width:760px}
+.end{padding:110px 0 120px;text-align:center}
+.end h2{font-size:clamp(36px,5.5vw,64px)}
+.end p{color:var(--mut);margin:0 0 26px;font-size:17px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--acc);color:#04141a;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px;opacity:0;transition:.3s;z-index:99;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:960px){
+  nav .wrap{grid-template-columns:1fr auto}.links{display:none}
+  .hero .wrap,.steps,.tools,.compose{grid-template-columns:1fr}
+  .vis{min-height:0;display:flex;flex-direction:column}
+  .kimg{position:relative;width:100%}.kimg img{transform:scale(1.35);transform-origin:50% 50%}.vis:hover .kimg img{transform:scale(1.35)}
+  .filing{position:relative;width:100%;margin-top:-80px}
+  .rstats{grid-template-columns:1fr}.rstats div{border-right:0;border-bottom:1px solid var(--line)}
+  .crow{grid-template-columns:1fr 1fr 1fr}.crow>div{padding:12px;font-size:13px}
+  .cl{grid-template-columns:1fr auto}.cl .c3,.cl .c4{display:none}
+  section.blk{padding:72px 0}
+}
+@media (max-width:560px){.wrap{padding:0 16px}.nr .ghost{display:none}.hstats{gap:18px}.row{flex-direction:column;gap:0}}
+</style>
+</head>
+<body>
+<div class="bgfx"></div>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><img src="favicon.png" alt="">Stonk Strategy</a>
+  <div class="links"><a href="#how">How it works</a><a href="#radar">Vamp radar</a><a href="#check">Ticker check</a><a href="#prepare">Seal a launch</a><a href="#faq">FAQ</a></div>
+  <div class="nr"><a class="btn ghost sm" href="#radar">Vamp radar</a><a class="btn pri sm" href="#prepare">Seal a launch</a></div>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <div>
+    <div class="kick rv">The privacy layer for StonkFun</div>
+    <h1 class="rv">Launch private,<br><em>trade public.</em></h1>
+    <p class="lead rv">Wall Street never shows its hand. Neither should your launch. <b>Stonk Strategy</b> launches StonkFun coins from a one-time wallet, sealed until the block, with no dev bag and a vamp radar on every ticker.</p>
+    <div class="cta rv"><a class="btn pri" href="#prepare">Seal a launch →</a><a class="btn ghost" href="#check">Check a ticker</a></div>
+    <div class="hstats rv">
+      <div><b id="sTotal">—</b><span>coins on StonkFun</span></div>
+      <div><b id="sHour">—</b><span>launched in the last hour</span></div>
+      <div><b id="sDupe">—</b><span>of recent tickers already taken</span></div>
+    </div>
+  </div>
+  <div class="vis rv">
+    <div class="kimg"><img src="knight.jpg" alt="Stonk Strategy knight"></div>
+    <div class="filing">
+      <div class="fbar"><span class="t">What a tracker sees</span><div class="tog" id="tog"><button data-m="pub">Public</button><button data-m="prv" class="on">Private</button></div></div>
+      <div class="frows">
+        <div class="fr"><span>Dev wallet</span><b id="f1"></b></div>
+        <div class="fr"><span>Funded by</span><b id="f2"></b></div>
+        <div class="fr"><span>Past launches</span><b id="f3"></b></div>
+        <div class="fr"><span>Dev buy</span><b id="f4"></b></div>
+        <div class="fr"><span>Ticker before launch</span><b id="f5"></b></div>
+      </div>
+      <div class="fnote">Illustration. Flip it to see the difference.</div>
+    </div>
+  </div>
+</div></header>
+
+<div class="tape"><div class="tl"><i></i>JUST LAUNCHED</div><div class="track" id="tape"></div></div>
+
+<section class="blk" id="how"><div class="wrap">
+  <div class="hd"><div class="kick rv">How it works</div><h2 class="rv">Five moves. <em>None of them yours to track.</em></h2><p class="sub rv">Every launch runs the same play. Click through it.</p></div>
+  <div class="steps rv">
+    <div class="slist" id="slist"></div>
+    <div class="stage" id="stage"></div>
+  </div>
+</div></section>
+
+<section class="blk" style="padding-top:0"><div class="wrap">
+  <div class="hd"><div class="kick rv">Public vs private</div><h2 class="rv">Same coin. <em>Different trail.</em></h2></div>
+  <div class="cmp rv">
+    <div class="crow h"><div></div><div>Normal launch</div><div>Stonk Strategy</div></div>
+    <div class="crow"><div>Who signs the launch</div><div>Your wallet</div><div>A one-time wallet</div></div>
+    <div class="crow"><div>Who pays for it</div><div>You, on-chain</div><div>The treasury</div></div>
+    <div class="crow"><div>Your past launches</div><div class="bad">One click away</div><div class="good">Not linked</div></div>
+    <div class="crow"><div>Ticker before the block</div><div class="bad">Visible to anyone watching</div><div class="good">Sealed</div></div>
+    <div class="crow"><div>Dev bag</div><div>Whatever you buy</div><div class="good">None</div></div>
+    <div class="crow"><div>Copies of your ticker</div><div>Up to you to spot</div><div class="good">Flagged on the radar</div></div>
+    <div class="crow"><div>Creator fees</div><div>To your wallet</div><div>To any address, claimed with your key</div></div>
+  </div>
+</div></section>
+
+<section class="blk" id="radar" style="padding-top:0"><div class="wrap">
+  <div class="hd"><div class="kick rv">Vamp radar</div><h2 class="rv">Every ticker that got <em>copied</em>.</h2><p class="sub rv">The newest launches on StonkFun, grouped by ticker. The first one gets the stamp. Everything after it is a copy.</p></div>
+  <div class="panel rv">
+    <div class="ptop"><span class="live" id="rLive">Loading</span><div class="seg" id="rWin"><button data-n="100">Last 100</button><button data-n="300" class="on">Last 300</button><button data-n="500">Last 500</button></div></div>
+    <div class="rstats"><div><b id="rScan">—</b><span>launches scanned</span></div><div><b id="rGroups">—</b><span>tickers launched more than once</span></div><div><b id="rCopies">—</b><span>copies</span></div></div>
+    <div class="groups" id="groups"><div class="empty">Reading StonkFun…</div></div>
+  </div>
+  <div class="src mono" id="rSrc"></div>
+</div></section>
+
+<section class="blk" id="check" style="padding-top:0"><div class="wrap">
+  <div class="hd"><div class="kick rv">Ticker check</div><h2 class="rv">Is your ticker <em>still clean?</em></h2><p class="sub rv">Search every StonkFun coin for an exact ticker match before you launch.</p></div>
+  <div class="tool rv" style="max-width:760px">
+    <div class="row"><div class="field" style="flex:3"><label for="cIn">Ticker</label><input class="inp tk" id="cIn" maxlength="12" placeholder="e.g. KNIGHT" autocomplete="off"></div><div class="field" style="flex:1;justify-content:flex-end"><label>&nbsp;</label><button class="btn pri" id="cBtn" style="height:46px;justify-content:center">Check</button></div></div>
+    <div class="verdict" id="cOut"></div>
+  </div>
+</div></section>
+
+<section class="blk" id="prepare" style="padding-top:0"><div class="wrap">
+  <div class="hd"><div class="kick rv">Seal a launch</div><h2 class="rv">Claim the ticker <em>without showing it.</em></h2><p class="sub rv">Fill in your coin. You get the sealed filing and a seal code: a fingerprint of your ticker that reveals nothing. Post the code now, reveal later, and prove you had it first.</p></div>
+  <div class="tool rv">
+    <div class="tabs2"><button class="on" data-t="make">Make a seal</button><button data-t="verify">Verify a seal</button></div>
+    <div class="compose" id="tMake">
+      <div>
+        <div class="row">
+          <div class="field" style="flex:2"><label for="pName">Name</label><input class="inp" id="pName" maxlength="32" placeholder="Coin name" autocomplete="off"></div>
+          <div class="field"><label for="pTk">Ticker</label><input class="inp tk" id="pTk" maxlength="12" placeholder="TICKER" autocomplete="off"></div>
+        </div>
+        <div class="field"><label>Paired with</label><div class="qpick" id="qpick"></div></div>
+        <div class="field"><label>Image</label><div style="display:flex;gap:12px;align-items:center"><label class="pimg" id="pImgBox" for="pImg">+</label><input type="file" id="pImg" accept="image/*" hidden><span class="muted" style="font-size:13px">Stays in your browser.</span></div></div>
+        <button class="btn pri" id="sealBtn" style="margin-top:6px">Seal it</button>
+        <div id="sealOut" class="hide">
+          <div class="field" style="margin-top:18px"><label>Seal code · post this</label><div class="seal" id="sealHash"></div></div>
+          <div class="field"><label>Your secret · keep this, it reveals the ticker</label><div class="seal" id="sealSalt" style="color:var(--mut)"></div></div>
+          <div class="row" style="gap:8px"><button class="btn ghost sm" id="cpSeal">Copy seal</button><button class="btn ghost sm" id="cpSecret">Copy secret</button><a class="btn pri sm" id="xSeal" target="_blank" rel="noopener">Post seal on 𝕏</a></div>
+        </div>
+      </div>
+      <div class="card2">
+        <div class="fbar"><span class="t">Filing · StonkFun</span><span class="live" style="font-size:10px">Sealed</span></div>
+        <div style="display:flex;gap:14px;align-items:center;padding:18px 16px 8px"><div class="pimg" id="cImg" style="border-style:solid;cursor:default">?</div><div><div style="font-weight:800;font-size:18px;letter-spacing:-.02em" id="cName">Your coin</div><div class="mono acc" style="font-size:13px" id="cTk">$██████</div></div></div>
+        <div class="frows">
+          <div class="fr"><span>Creator</span><b><i class="red" style="width:150px"></i></b></div>
+          <div class="fr"><span>Dev wallet</span><b><i class="red" style="width:110px"></i></b></div>
+          <div class="fr"><span>Dev buy</span><b>None</b></div>
+          <div class="fr"><span>Paired with</span><b class="acc" id="cQ">SPYx</b></div>
+          <div class="fr"><span>Ticker</span><b class="acc" id="cSt">Sealed until the block</b></div>
+          <div class="fr"><span>Seal</span><b class="mono" id="cSeal" style="font-size:12px;color:var(--mut)">not sealed yet</b></div>
+        </div>
+      </div>
+    </div>
+    <div id="tVerify" class="hide" style="max-width:760px">
+      <div class="row"><div class="field"><label for="vTk">Ticker</label><input class="inp tk" id="vTk" autocomplete="off"></div><div class="field" style="flex:2"><label for="vName">Name</label><input class="inp" id="vName" autocomplete="off"></div></div>
+      <div class="field"><label for="vSalt">Secret</label><input class="inp mono" id="vSalt" autocomplete="off"></div>
+      <div class="field"><label for="vHash">Seal code</label><input class="inp mono" id="vHash" autocomplete="off"></div>
+      <button class="btn pri" id="vBtn">Verify</button>
+      <div class="verdict" id="vOut"></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="blk faq" id="faq" style="padding-top:0"><div class="wrap" style="max-width:900px">
+  <div class="hd"><div class="kick rv">FAQ</div><h2 class="rv">Questions.</h2></div>
+  <details open><summary>What is Stonk Strategy?</summary><p>The privacy layer for StonkFun launches. A one-time wallet launches your coin, the treasury pays for it, the ticker stays sealed until the block, there's no dev bag, and every copy of your ticker gets flagged on the vamp radar.</p></details>
+  <details><summary>Is the private launcher live?</summary><p>Private launches open with $STRAT. The vamp radar, the ticker check and seals work today.</p></details>
+  <details><summary>What is a seal?</summary><p>A SHA-256 fingerprint of your ticker, name and a random secret, made in your browser. It reveals nothing on its own. Post it, and when you launch, share the secret: anyone can check here that the seal matches, and the timestamp on your post proves you had the ticker first.</p></details>
+  <details><summary>Where do the numbers come from?</summary><p>StonkFun's public API, read live in your browser. Nothing on this page is simulated.</p></details>
+  <details><summary>Is Stonk Strategy part of StonkFun?</summary><p>No. Stonk Strategy is independent and built on StonkFun.</p></details>
+  <details><summary>Does private mean the coin is hidden?</summary><p>No. Once it's live the coin trades in public on StonkFun like any other. What stays private is who launched it.</p></details>
+</div></section>
+
+<section class="end"><div class="wrap">
+  <h2 class="rv">Wall Street never shows its hand.<br><em>Neither should your launch.</em></h2>
+  <p class="rv">Check the ticker. Seal it. Launch private, trade public.</p>
+  <div class="cta rv" style="justify-content:center"><a class="btn pri" href="#prepare">Seal a launch →</a><a class="btn ghost" href="#radar">Open the vamp radar</a></div>
+</div></section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SF='https://www.stonkfun.xyz/api/public/v1/tokens', SITE='https://www.stonkfun.xyz';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const usd=v=>v==null?'—':v>=1e9?'$'+(v/1e9).toFixed(2)+'B':v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K':'$'+Math.round(v);
+const ago=t=>{const s=Math.max(0,(Date.now()-new Date(t))/1000);return s<60?Math.round(s)+'s':s<3600?Math.round(s/60)+'m':s<86400?Math.round(s/3600)+'h':Math.round(s/86400)+'d'};
+const BAD=/fuck|shit|cunt|n[i1]gg|fag|retard|porn|\bsex|\bcum|rape|nazi|hitler|kkk|pedo|whore|slut|dick|cock|pussy|bitch|kys/i;
+const img=t=>t.imageUrl?(t.imageUrl.startsWith('http')?t.imageUrl:SITE+t.imageUrl):'';
+const av=(t,cls='')=>img(t)?`<img class="${cls}" src="${esc(img(t))}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ph'}))">`:`<span class="ph"></span>`;
+const norm=s=>String(s||'').trim().replace(/^\$/,'').toUpperCase();
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1800)};
+const copy=async(s,m)=>{try{await navigator.clipboard.writeText(s);toast(m||'Copied')}catch(e){toast('Copy failed')}};
+function countTo(el,to,fmt){const t0=performance.now();const f=n=>{const k=Math.min(1,(n-t0)/1100),e=1-Math.pow(1-k,4);el.textContent=fmt(to*e);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
+
+/* hero toggle */
+const FM={pub:[['<span class="bad">your wallet</span>'],['<span class="bad">your main wallet</span>'],['<span class="bad">every coin you launched</span>'],['<span class="bad">split across your wallets</span>'],['<span class="bad">visible</span>']],
+          prv:[['<i class="red" style="width:120px"></i>'],['<i class="red" style="width:90px"></i>'],['<span class="good">none linked</span>'],['<span class="good">none</span>'],['<span class="acc">sealed</span>']]};
+function setTog(m){$$('#tog button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));FM[m].forEach((v,i)=>$('#f'+(i+1)).innerHTML=v[0])}
+$('#tog').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setTog(b.dataset.m)});setTog('prv');
+
+/* steps */
+const STEPS=[
+ {t:'You seal it',s:'Name, ticker, stock',h:'You write the filing. Nobody sees it.',p:'Pick a name, a ticker and the stock your coin trades against on StonkFun. It stays sealed in the filing until the coin exists.',d:[['You','name · ticker · stock',1],'→',['Filing','sealed',0]]},
+ {t:'A one-time wallet signs',s:'Not yours',h:'A wallet nobody has seen before launches it.',p:'Every launch gets a fresh wallet. It has no history, no past coins and no link to you, so wallet trackers have nothing to follow.',d:[['Filing','sealed',0],'→',['One-time wallet','fresh · no history',1],'→',['StonkFun','create',0]]},
+ {t:'The treasury pays',s:'No SOL from you',h:'You never send SOL to the launch.',p:'The treasury funds the one-time wallet, so there is no transfer from your wallet for anyone to trace. No connect, no signature.',d:[['Treasury','funds',1],'→',['One-time wallet','pays the launch',0],'',['You','<span class="x">✕</span> no transfer',0]]},
+ {t:'No dev bag',s:'Same curve for everyone',h:'The launch wallet never buys.',p:'There is no dev buy and no bundle, so there is nothing sitting in the first block waiting to sell into you. If you want in, you buy in public like everyone else.',d:[['Block 0','create only',1],'→',['Dev buy','none',0],'→',['First buyer','anyone',0]]},
+ {t:'Vamps get flagged',s:'One ticker, one original',h:'Copies show up on the radar.',p:'Every coin launched after yours with the same ticker is listed on the vamp radar with its time, so everyone can see which one came first.',d:[['Your coin','original',1],'→',['Copy #1','flagged',0],'→',['Copy #2','flagged',0]]}];
+let SI=0,ST;
+function renderSteps(){ $('#slist').innerHTML=STEPS.map((s,i)=>`<button class="sbtn ${i===SI?'on':''}" data-i="${i}"><span class="n">0${i+1}</span><span><b>${s.t}</b><small>${s.s}</small></span><i class="pr"></i></button>`).join('');
+  const s=STEPS[SI];$('#stage').innerHTML=`<div class="fade"><div class="kick">Step 0${SI+1}</div><h3>${s.h}</h3><p>${s.p}</p><div class="diagram">${s.d.map(x=>typeof x==='string'?(x?`<span class="arr">${x}</span>`:'<span style="width:14px"></span>'):`<div class="node ${x[2]?'hl':''}"><small>${x[0]}</small><b>${x[1]}</b></div>`).join('')}</div></div>`;
+  clearTimeout(ST);ST=setTimeout(()=>{SI=(SI+1)%STEPS.length;renderSteps()},6000)}
+$('#slist').addEventListener('click',e=>{const b=e.target.closest('.sbtn');if(b){SI=+b.dataset.i;renderSteps()}});
+
+/* data */
+let RECENT=[],TOTAL=null;
+async function page(p,n=100){const r=await fetch(`${SF}?pageSize=${n}&sort=newest&page=${p}`);if(!r.ok)throw new Error(r.status);return (await r.json()).data}
+async function loadRecent(n){const pages=Math.ceil(n/100);const ds=await Promise.all(Array.from({length:pages},(_,i)=>page(i+1)));TOTAL=ds[0]?.pagination?.total??TOTAL;
+  const seen=new Set();RECENT=ds.flatMap(d=>d.tokens||[]).filter(t=>t&&!seen.has(t.mint)&&seen.add(t.mint));return RECENT}
+function tape(list){const L=list.filter(t=>!BAD.test((t.name||'')+' '+(t.symbol||''))).slice(0,40);if(!L.length){$('#tape').innerHTML='<span class="chip"><small>StonkFun isn\'t answering right now.</small></span>';return}
+  const h=L.map(t=>`<a class="chip" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener">${av(t)}<b>$${esc(norm(t.symbol).slice(0,12))}</b><span class="q">${esc(t.quote?.symbol||'')}</span><small>${ago(t.createdAt)} ago</small></a>`).join('');$('#tape').innerHTML=h+h}
+function groupsOf(list){const m=new Map();for(const t of list){const k=norm(t.symbol);if(!k)continue;if(!m.has(k))m.set(k,[]);m.get(k).push(t)}
+  return [...m.entries()].filter(([k,v])=>v.length>1).map(([k,v])=>[k,v.sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt))]).sort((a,b)=>b[1].length-a[1].length||new Date(b[1].at(-1).createdAt)-new Date(a[1].at(-1).createdAt))}
+let RN=300;
+function radar(){const list=RECENT.slice(0,RN);const G=groupsOf(list);const copies=G.reduce((a,[,v])=>a+v.length-1,0);
+  $('#rScan').textContent=list.length.toLocaleString('en-US');$('#rGroups').textContent=G.length;$('#rCopies').textContent=copies;
+  const span=list.length?ago(list.at(-1).createdAt):'';$('#rLive').textContent=list.length?`Live · last ${span}`:'Offline';
+  if(!G.length){$('#groups').innerHTML='<div class="empty">No repeated tickers in this window.</div>';return}
+  $('#groups').innerHTML=G.map(([k,v],gi)=>{const clean=BAD.test(k+' '+v.map(t=>t.name).join(' '));const K=clean?'█'.repeat(Math.min(k.length,6)):esc(k.slice(0,14));
+    return `<div class="grp ${gi===0?'open':''}"><div class="gh"><span class="tk">$${K}</span><span class="stack">${v.slice(0,6).map(t=>av(t)).join('')}</span><span class="cnt">${v.length}×</span><span class="car">›</span></div>
+    <div class="gb">${v.map((t,i)=>`<a class="cl" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener"><span class="nm">${av(t)}<span>${clean?'—':esc((t.name||'').slice(0,34))}</span></span><span class="q mono muted c3" style="font-size:12px">${esc(t.quote?.symbol||'')}</span><span class="mono muted c4" style="font-size:12px">${usd(t.market?.marketCapUsd)} · ${ago(t.createdAt)} ago</span><span class="tag ${i?'vp':'og'}">${i?'COPY #'+i:'FIRST'}</span></a>`).join('')}</div></div>`}).join('');
+  $('#rSrc').textContent=`StonkFun public API · newest ${list.length} launches · refreshed ${new Date().toLocaleTimeString()}`}
+$('#groups').addEventListener('click',e=>{const h=e.target.closest('.gh');if(h)h.parentElement.classList.toggle('open')});
+$('#rWin').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;$$('#rWin button').forEach(x=>x.classList.toggle('on',x===b));RN=+b.dataset.n;
+  if(RECENT.length<RN){$('#groups').innerHTML='<div class="empty">Reading StonkFun…</div>';try{await loadRecent(RN)}catch(e){}}radar()});
+function heroStats(){if(TOTAL!=null)countTo($('#sTotal'),TOTAL,n=>Math.round(n).toLocaleString('en-US'));
+  const hr=RECENT.filter(t=>Date.now()-new Date(t.createdAt)<3600e3).length;if(RECENT.length)countTo($('#sHour'),hr,n=>Math.round(n)+(hr>=RECENT.length?'+':''));
+  const L=RECENT.slice(0,300);if(L.length){const G=groupsOf(L);const dup=G.reduce((a,[,v])=>a+v.length-1,0);const pc=dup/L.length*100;countTo($('#sDupe'),pc,n=>n.toFixed(1)+'%')}}
+function quotes(){const c={};RECENT.forEach(t=>{const q=t.quote?.symbol;if(q&&(t.quote?.category==='xstock'||/X$/.test(q)))c[q]=(c[q]||0)+1});
+  let L=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,10);for(const d of ['SPYX','QQQX','TSLAX','NVDAX','GOOGLX','GLDX'])if(!L.includes(d)&&L.length<10)L.push(d);
+  const fmt=q=>q.endsWith('X')?q.slice(0,-1)+'x':q;$('#qpick').innerHTML=L.map((q,i)=>`<button data-q="${esc(fmt(q))}" class="${i===0?'on':''}">${esc(fmt(q))}</button>`).join('');$('#cQ').textContent=fmt(L[0])}
+$('#qpick').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#qpick button').forEach(x=>x.classList.toggle('on',x===b));$('#cQ').textContent=b.dataset.q;resetSeal()});
+
+/* ticker check */
+async function check(){const tk=norm($('#cIn').value).replace(/\s+/g,'');const out=$('#cOut');if(!tk){$('#cIn').focus();return}
+  out.className='verdict show';out.innerHTML='<span class="muted">Searching StonkFun…</span>';$('#cBtn').disabled=true;
+  try{const r=await fetch(`${SF}?pageSize=100&q=${encodeURIComponent(tk)}`);const j=await r.json();const all=j.data?.tokens||[];const hit=all.filter(t=>norm(t.symbol)===tk).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
+    const more=(j.data?.pagination?.total||0)>100;
+    if(!hit.length){out.innerHTML=`<h4 class="ok">$${esc(tk)} is clean.</h4><div class="muted" style="font-size:14px">No StonkFun coin uses this exact ticker${more?' in the top 100 matches':''}. Seal it before someone else sees it.</div><div style="margin-top:12px"><a class="btn pri sm" href="#prepare" onclick="document.getElementById('pTk').value='${esc(tk)}';syncCard()">Seal $${esc(tk)} →</a></div>`}
+    else{out.innerHTML=`<h4 class="no">$${esc(tk)} is taken ${hit.length}×${more?'+':''}.</h4><div class="muted" style="font-size:14px">Launching it now makes you copy #${hit.length}. First one: ${esc((hit[0].name||'').slice(0,40))}, ${ago(hit[0].createdAt)} ago.</div><div class="ls">${hit.slice(0,30).map((t,i)=>`<a class="cl" href="${SITE}/token/${encodeURIComponent(t.mint)}" target="_blank" rel="noopener"><span class="nm">${av(t)}<span>${esc((t.name||'').slice(0,34))}</span></span><span class="mono muted c3" style="font-size:12px">${esc(t.quote?.symbol||'')}</span><span class="mono muted c4" style="font-size:12px">${usd(t.market?.marketCapUsd)} · ${ago(t.createdAt)} ago</span><span class="tag ${i?'vp':'og'}">${i?'COPY #'+i:'FIRST'}</span></a>`).join('')}</div>`}
+  }catch(e){out.innerHTML='<span class="no">StonkFun isn\'t answering right now. Try again in a moment.</span>'}
+  $('#cBtn').disabled=false}
+$('#cBtn').addEventListener('click',check);$('#cIn').addEventListener('keydown',e=>{if(e.key==='Enter')check()});
+
+/* seal */
+const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+async function sha(s){return hex(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))}
+const msg=(tk,nm,salt)=>`STONK-STRATEGY-SEAL|${norm(tk)}|${String(nm).trim()}|${salt}`;
+function syncCard(){const n=$('#pName').value.trim(),t=norm($('#pTk').value);$('#cName').textContent=n||'Your coin';$('#cTk').textContent=t?'$'+'█'.repeat(Math.min(t.length,8)):'$██████';resetSeal()}
+function resetSeal(){if(!$('#sealOut').classList.contains('hide')){$('#sealOut').classList.add('hide');$('#cSeal').textContent='not sealed yet'}}
+$('#pName').addEventListener('input',syncCard);$('#pTk').addEventListener('input',syncCard);
+$('#pImg').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);$('#pImgBox').innerHTML=`<img src="${u}" alt="">`;$('#cImg').innerHTML=`<img src="${u}" alt="">`});
+$('#sealBtn').addEventListener('click',async()=>{const n=$('#pName').value.trim(),t=norm($('#pTk').value);if(!n){$('#pName').focus();toast('Add a name');return}if(!t){$('#pTk').focus();toast('Add a ticker');return}
+  const salt=hex(crypto.getRandomValues(new Uint8Array(16)));const h=await sha(msg(t,n,salt));
+  $('#sealHash').textContent=h;$('#sealSalt').textContent=salt;$('#cSeal').textContent=h.slice(0,10)+'…'+h.slice(-6);$('#sealOut').classList.remove('hide');
+  $('#xSeal').href='https://x.com/intent/post?text='+encodeURIComponent(`Sealed a StonkFun launch. The ticker stays private until the block.\n\nseal: ${h}`);
+  window._seal={t,n,salt,h};toast('Sealed')});
+$('#cpSeal').addEventListener('click',()=>copy($('#sealHash').textContent,'Seal copied'));
+$('#cpSecret').addEventListener('click',()=>copy(`ticker: ${window._seal?.t}\nname: ${window._seal?.n}\nsecret: ${window._seal?.salt}\nseal: ${window._seal?.h}`,'Secret copied'));
+$$('.tabs2 button').forEach(b=>b.addEventListener('click',()=>{$$('.tabs2 button').forEach(x=>x.classList.toggle('on',x===b));$('#tMake').classList.toggle('hide',b.dataset.t!=='make');$('#tVerify').classList.toggle('hide',b.dataset.t!=='verify')}));
+$('#vBtn').addEventListener('click',async()=>{const o=$('#vOut');const h=await sha(msg($('#vTk').value,$('#vName').value,$('#vSalt').value.trim()));const want=$('#vHash').value.trim().toLowerCase();o.className='verdict show';
+  o.innerHTML=want&&h===want?`<h4 class="ok">Seal matches.</h4><div class="muted" style="font-size:14px">$${esc(norm($('#vTk').value))} · ${esc($('#vName').value.trim())} is what was sealed.</div>`:`<h4 class="no">Seal doesn't match.</h4><div class="muted" style="font-size:14px">Check the ticker, the name (exact spelling) and the secret.</div>`});
+
+/* reveal + nav */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('shown');io.unobserve(e.target)}}),{threshold:.12});$$('.rv').forEach(el=>io.observe(el));
+const secs=['how','radar','check','prepare','faq'].map(id=>document.getElementById(id));
+addEventListener('scroll',()=>{let cur='';for(const s of secs)if(s.getBoundingClientRect().top<140)cur=s.id;$$('.links a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur))},{passive:true});
+
+/* init */
+renderSteps();
+(async()=>{try{await loadRecent(300)}catch(e){$('#rLive').textContent='Offline';$('#groups').innerHTML='<div class="empty">StonkFun isn\'t answering right now. Try again in a moment.</div>'}
+  tape(RECENT);radar();heroStats();quotes()})();
+setInterval(async()=>{try{await loadRecent(Math.max(RN,300));tape(RECENT);radar()}catch(e){}},60000);
+</script>
+</body>
+</html>
